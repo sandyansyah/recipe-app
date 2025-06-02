@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOD of FOOD - AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            --primary-color: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
+            --secondary-color: #F97316;
+            --secondary-light: #FB923C;
+            --secondary-dark: #EA580C;
+            --neutral-light: #F9FAFB;
+            --neutral-medium: #F0F0F0;
+            --neutral-dark: #E5E7EB;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-light: #F9FAFB;
+            --accent-color: #10B981;
+            --accent-light: #34D399;
+            --accent-dark: #059669;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 20px;
+            --transition-speed: 0.2s;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 290px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 10;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .sidebar-header {
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-header h1 {
+            color: white;
+            font-weight: 600;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            width: 100%;
+            height: 76px;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color var(--transition-speed);
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+        }
+        
+        /* Main content */
+        .main-content {
+            margin-left: 290px;
+            width: calc(100% - 290px);
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Chat area */
+        .chat-area {
+            width: calc(100% - 40px);
+            height: 664px;
+            margin: 20px;
+            background: var(--neutral-light);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        
+        .message.ai {
+            margin-right: auto;
+        }
+        
+        .message.user {
+            margin-left: auto;
+        }
+        
+        .message-content {
+            padding: 15px;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .message.ai .message-content {
+            background: white;
+            color: var(--text-primary);
+            border-top-left-radius: 4px;
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-top-right-radius: 4px;
+        }
+        
+        /* Recommendations area */
+        .recommendations-container {
+            width: 694px;
+            height: 323px;
+            background: white;
+            border-radius: var(--border-radius-lg);
+            margin: 0 20px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            position: absolute;
+            top: 327px;
+            right: 0;
+        }
+        
+        .recommendations-header {
+            padding: 15px;
+            background: linear-gradient(to right, var(--secondary-color), var(--secondary-light));
+            color: white;
+            font-weight: 500;
+        }
+        
+        .recommendations-list {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .recommendation-item {
+            background: var(--neutral-medium);
+            border-radius: var(--border-radius-sm);
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+        
+        .recommendation-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .recommendation-item h3 {
+            font-size: 15px;
+            margin: 0;
+        }
+        
+        .similarity-score {
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        /* Input area */
+        .input-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            height: 234px;
+        }
+        
+        /* Ingredients selector */
+        .ingredients-selector {
+            width: 283px;
+            height: 100%;
+            background: white;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            margin-right: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ingredients-header {
+            height: 78px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--secondary-light), var(--secondary-color));
+            color: white;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .ingredients-search {
+            padding: 10px 15px;
+            border: none;
+            border-bottom: 1px solid var(--neutral-dark);
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .ingredients-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .ingredient-item {
+            padding: 10px;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-size: 14px;
+        }
+        
+        .ingredient-item:hover {
+            background: var(--neutral-medium);
+        }
+        
+        .ingredient-item.selected {
+            background: var(--primary-light);
+            color: white;
+        }
+        
+        /* Input wrapper */
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .suggestion-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .suggestion-item {
+            background: var(--neutral-medium);
+            border-radius: var(--border-radius-sm);
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .suggestion-item:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+        
+        .input-field {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-field input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 0;
+            font-size: 16px;
+        }
+        
+        .send-button {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+        
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .send-button svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Selected ingredients display */
+        .selected-ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .selected-ingredient {
+            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+            color: white;
+            border-radius: 20px;
+            padding: 8px 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .remove-ingredient {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--neutral-light);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--neutral-dark);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+        
+        /* Detail recipe window */
+        .recipe-detail {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            max-height: 80%;
+            z-index: 100;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .recipe-detail-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+            color: white;
+        }
+        
+        .recipe-detail-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .recipe-detail-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(80vh - 60px);
+        }
+        
+        .recipe-detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .recipe-detail-section h3 {
+            margin-bottom: 10px;
+            color: var(--secondary-dark);
+            border-bottom: 2px solid var(--neutral-medium);
+            padding-bottom: 5px;
+        }
+        
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .ingredient-card {
+            background: var(--neutral-light);
+            border-radius: var(--border-radius-sm);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ingredient-card.available {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .close-detail {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            display: none;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>GOD of FOOD</h1>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('home_page') }}" class="{% if active_tab == 'home' %}active{% endif %}">Beranda</a></li>
+                <li><a href="{{ url_for('resep_page') }}" class="{% if active_tab == 'resep' %}active{% endif %}">Resep</a></li>
+                <li><a href="{{ url_for('ai_page') }}" class="{% if active_tab == 'ai' %}active{% endif %}">AI</a></li>
+            </ul>
+        </div>
+        
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Chat area -->
+            <div class="chat-area">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- AI Welcome message -->
+                    <div class="message ai">
+                        <div class="message-content">
+                            <p>Hello! I'm your Recipe Assistant. Tell me what ingredients you have, and I'll recommend recipes you can make.</p>
+                            <p>For example, try typing "I have rice, eggs, and some vegetables" or "What can I make with chicken and potatoes?"</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Display user message and AI response if they exist -->
+                    {% if user_input %}
+                    <div class="message user">
+                        <div class="message-content">
+                            <p>{{ user_input }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="message ai">
+                        <div class="message-content">
+                            {% if extracted_ingredients %}
+                                <p>I detected these ingredients: {{ ", ".join(extracted_ingredients) }}</p>
+                            {% endif %}
+                            
+                            {% if recommendations %}
+                                <p>Based on these ingredients, here are some recipe recommendations:</p>
+                                <p>Click on a recipe in the recommendations panel to view details.</p>
+                            {% else %}
+                                <p>I couldn't find any recipes that match those ingredients. Try adding more ingredients or being more specific.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recommendations area -->
+            <div class="recommendations-container">
+                <div class="recommendations-header">
+                    <h2>Recommended Recipes</h2>
+                </div>
+                <div class="recommendations-list">
+                    {% if recommendations %}
+                        {% for rec in recommendations %}
+                        <div class="recommendation-item" data-recipe-id="{{ loop.index }}">
+                            <h3>{{ rec.name }}</h3>
+                            <span class="similarity-score">{{ "%.0f"|format(rec.similarity_score * 100) }}% match</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-recommendations">
+                            <p>No recommendations yet. Try searching for ingredients!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Input area -->
+            <div class="input-container">
+                <!-- Ingredients selector -->
+                <div class="ingredients-selector">
+                    <div class="ingredients-header">
+                        Available Ingredients
+                    </div>
+                    <input type="text" class="ingredients-search" id="ingredients-search" placeholder="Search ingredients...">
+                    <div class="ingredients-list" id="ingredients-list">
+                        {% for ingredient in all_ingredients %}
+                        <div class="ingredient-item" data-ingredient="{{ ingredient }}">{{ ingredient }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Input wrapper -->
+                <div class="input-wrapper">
+                    <div class="suggestion-container" id="suggestion-container">
+                        <!-- Suggestion items will be added dynamically -->
+                    </div>
+                    
+                    <div class="selected-ingredients" id="selected-ingredients">
+                        {% for ingredient in extracted_ingredients %}
+                        <span class="selected-ingredient">
+                            {{ ingredient }}
+                            <button type="button" class="remove-ingredient" data-ingredient="{{ ingredient }}">×</button>
+                        </span>
+                        {% endfor %}
+                    </div>
+                    
+                    <form id="chat-form" method="post" action="{{ url_for('ai_page') }}">
+                        <div class="input-field">
+                            <input type="text" id="user-input" name="query" placeholder="I have...">
+                            <button type="submit" class="send-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Recipe detail overlay -->
+            <div class="overlay" id="overlay"></div>
+            
+            <!-- Recipe detail window -->
+            {% if recommendations %}
+                {% for rec in recommendations %}
+                <div class="recipe-detail" id="recipe-{{ loop.index }}">
+                    <button class="close-detail" data-recipe-id="{{ loop.index }}">×</button>
+                    <div class="recipe-detail-header">
+                        <h2>{{ rec.name }}</h2>
+                    </div>
+                    <div class="recipe-detail-content">
+                        <div class="recipe-detail-section">
+                            <h3>Ingredients</h3>
+                            <div class="ingredients-grid">
+                                {% for ing in rec.ingredients %}
+                                <div class="ingredient-card {% if ing in extracted_ingredients %}available{% endif %}">
+                                    {% if ing in extracted_ingredients %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    {% endif %}
+                                    <span>{{ ing }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="recipe-detail-section">
+                            <h3>Instructions</h3>
+                            <p>{{ rec.instructions }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById('chat-form');
+            const userInput = document.getElementById('user-input');
+            const chatMessages = document.getElementById('chat-messages');
+            const ingredientItems = document.querySelectorAll('.ingredient-item');
+            const selectedIngredientsContainer = document.getElementById('selected-ingredients');
+            const ingredientsSearch = document.getElementById('ingredients-search');
+            const ingredientsList = document.getElementById('ingredients-list');
+            const suggestionContainer = document.getElementById('suggestion-container');
+            
+            // Scroll to bottom of chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Function to update input text based on selected ingredients
+            function updateInputFromIngredients() {
+                const selectedIngredients = Array.from(selectedIngredientsContainer.querySelectorAll('.selected-ingredient'))
+                    .map(el => el.textContent.replace('×', '').trim());
+                
+                // Update the input with comma-separated ingredients
+                if (selectedIngredients.length > 0) {
+                    userInput.value = "I have " + selectedIngredients.join(', ');
+                } else {
+                    userInput.value = "";
+                }
+            }
+            
+            // Add ingredient items to selection
+            ingredientItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const ingredient = this.getAttribute('data-ingredient');
+                    
+                    // Check if already selected to avoid duplicates
+                    const existingItem = Array.from(selectedIngredientsContainer.querySelectorAll('.selected-ingredient'))
+                        .find(element => element.textContent.replace('×', '').trim() === ingredient);
+                    
+                    if (!existingItem) {
+                        // Create new selected ingredient element
+                        const selectedIngredient = document.createElement('span');
+                        selectedIngredient.className = 'selected-ingredient';
+                        selectedIngredient.innerHTML = ingredient + ' <button type="button" class="remove-ingredient" data-ingredient="' + ingredient + '">×</button>';
+                        
+                        // Add remove button functionality
+                        selectedIngredient.querySelector('.remove-ingredient').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            selectedIngredient.remove();
+                            updateInputFromIngredients();
+                        });
+                        
+                        // Add to selected ingredients container
+                        selectedIngredientsContainer.appendChild(selectedIngredient);
+                        
+                        // Update input
+                        updateInputFromIngredients();
+                        
+                        // Add selected class to the item
+                        this.classList.add('selected');
+                    }
+                    
+                    // Reset search field
+                    ingredientsSearch.value = '';
+                    
+                    // Show all ingredients
+                    filterIngredients('');
+                    
+                    // Focus back on input
+                    userInput.focus();
+                });
+            });
+            
+            // Add remove functionality to any existing selected ingredients
+            document.querySelectorAll('.remove-ingredient').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.parentElement.remove();
+                    updateInputFromIngredients();
+                    
+                    // Remove selected class from the corresponding ingredient item
+                    const ingredient = this.getAttribute('data-ingredient');
+                    const ingredientItem = document.querySelector(`.ingredient-item[data-ingredient="${ingredient}"]`);
+                    if (ingredientItem) {
+                        ingredientItem.classList.remove('selected');
+                    }
+                });
+            });
+            
+            // Filter ingredients based on search
+            ingredientsSearch.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                filterIngredients(query);
+            });
+            
+            function filterIngredients(query) {
+                ingredientItems.forEach(item => {
+                    const ingredient = item.getAttribute('data-ingredient').toLowerCase();
+                    
+                    if (ingredient.includes(query) || query === '') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Generate suggestions as user types
+            userInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                // Only show suggestions if user has typed something that might be the start of an ingredient
+                if (query.includes('i have') || query.includes('using') || query.includes('with')) {
+                    // Extract the last part of the query after "i have", "using", etc.
+                    let searchTerm = '';
+                    if (query.includes('i have')) {
+                        searchTerm = query.split('i have')[1].trim();
+                    } else if (query.includes('using')) {
+                        searchTerm = query.split('using')[1].trim();
+                    } else if (query.includes('with')) {
+                        searchTerm = query.split('with')[1].trim();
+                    }
+                    
+                    // If the last part ends with a comma, take only what's after the last comma
+                    if (searchTerm.includes(',')) {
+                        const parts = searchTerm.split(',');
+                        searchTerm = parts[parts.length - 1].trim();
+                    }
+                    
+                    generateSuggestions(searchTerm);
+                } else {
+                    // Clear suggestions if user hasn't typed a relevant phrase
+                    suggestionContainer.innerHTML = '';
+                }
+            });
+            
+            function generateSuggestions(searchTerm) {
+                // Clear previous suggestions
+                suggestionContainer.innerHTML = '';
+                
+                if (!searchTerm) return;
+                
+                // Find ingredients that match the search term
+                const allIngredients = Array.from(ingredientItems)
+                    .map(item => item.getAttribute('data-ingredient'));
+                
+                const matchingIngredients = allIngredients
+                    .filter(ingredient => ingredient.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .slice(0, 4); // Limit to 4 suggestions
+                
+                // Create suggestion items
+                matchingIngredients.forEach(ingredient => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.className = 'suggestion-item';
+                    suggestionItem.textContent = ingredient;
+                    suggestionItem.addEventListener('click', function() {
+                        // Add this ingredient to selected ingredients
+                        const existingItem = Array.from(selectedIngredientsContainer.querySelectorAll('.selected-ingredient'))
+                            .find(element => element.textContent.replace('×', '').trim() === ingredient);
+                        
+                        if (!existingItem) {
+                            const selectedIngredient = document.createElement('span');
+                            selectedIngredient.className = 'selected-ingredient';
+                            selectedIngredient.innerHTML = ingredient + ' <button type="button" class="remove-ingredient" data-ingredient="' + ingredient + '">×</button>';
+                            
+                            selectedIngredient.querySelector('.remove-ingredient').addEventListener('click', function(e) {
+                                e.preventDefault();
+                                selectedIngredient.remove();
+                                updateInputFromIngredients();
+                                
+                                const ingredientItem = document.querySelector(`.ingredient-item[data-ingredient="${ingredient}"]`);
+                                if (ingredientItem) {
+                                    ingredientItem.classList.remove('selected');
+                                }
+                            });
+                            
+                            selectedIngredientsContainer.appendChild(selectedIngredient);
+                            
+                            const ingredientItem = document.querySelector(`.ingredient-item[data-ingredient="${ingredient}"]`);
+                            if (ingredientItem) {
+                                ingredientItem.classList.add('selected');
+                            }
+                        }
+                        
+                        // Update input and clear suggestions
+                        updateInputFromIngredients();
+                        suggestionContainer.innerHTML = '';
+                    });
+                    
+                    suggestionContainer.appendChild(suggestionItem);
+                });
+            }
+            
+            // Recipe detail view
+            const recommendationItems = document.querySelectorAll('.recommendation-item');
+            const recipeDetails = document.querySelectorAll('.recipe-detail');
+            const overlay = document.getElementById('overlay');
+            const closeButtons = document.querySelectorAll('.close-detail');
+            
+            recommendationItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const recipeId = this.getAttribute('data-recipe-id');
+                    const recipeDetail = document.getElementById(`recipe-${recipeId}`);
+                    
+                    if (recipeDetail) {
+                        overlay.style.display = 'block';
+                        recipeDetail.style.display = 'block';
+                        recipeDetail.classList.add('fade-in');
+                    }
+                });
+            });
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const recipeId = this.getAttribute('data-recipe-id');
+                    const recipeDetail = document.getElementById(`recipe-${recipeId}`);
+                    
+                    if (recipeDetail) {
+                        overlay.style.display = 'none';
+                        recipeDetail.style.display = 'none';
+                        recipeDetail.classList.remove('fade-in');
+                    }
+                });
+            });
+            
+            overlay.addEventListener('click', function() {
+                overlay.style.display = 'none';
+                recipeDetails.forEach(detail => {
+                    detail.style.display = 'none';
+                    detail.classList.remove('fade-in');
+                });
+            });
+            
+            // If there are extracted ingredients from a previous query, update the input
+            if (selectedIngredientsContainer.children.length > 0) {
+                updateInputFromIngredients();
+                
+                // Also mark those ingredients as selected in the ingredients list
+                Array.from(selectedIngredientsContainer.querySelectorAll('.selected-ingredient')).forEach(selected => {
+                    const ingredient = selected.textContent.replace('×', '').trim();
+                    const ingredientItem = document.querySelector(`.ingredient-item[data-ingredient="${ingredient}"]`);
+                    if (ingredientItem) {
+                        ingredientItem.classList.add('selected');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

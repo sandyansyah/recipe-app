@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder - Recipes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation sidebar -->
+        <div class="app-sidebar">
+            <div class="sidebar-header">
+                <h1>Recipe Finder</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="{{ url_for('home_page') }}" class="{% if active_tab == 'home' %}active{% endif %}">Home</a></li>
+                    <li><a href="{{ url_for('resep_page') }}" class="{% if active_tab == 'resep' %}active{% endif %}">Recipes</a></li>
+                    <li><a href="{{ url_for('ai_page') }}" class="{% if active_tab == 'ai' %}active{% endif %}">AI Assistant</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <p>&copy; 2025 Recipe Finder</p>
+            </div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="chat-main">
+            <div class="chat-header">
+                <h2>Recipe Collection</h2>
+            </div>
+            
+            <div class="chat-body">
+                <section class="recipe-list">
+                    <div class="recipes">
+                        {% for recipe in recipes %}
+                        <div class="recipe-card">
+                            <h3>{{ recipe.name }}</h3>
+                            <div class="recipe-details">
+                                <div class="ingredients">
+                                    <h4>Ingredients:</h4>
+                                    <ul>
+                                        {% for ingredient in recipe.ingredients %}
+                                        <li>{{ ingredient }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="instructions">
+                                    <h4>Instructions:</h4>
+                                    <p>{{ recipe.instructions }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle recipe details when clicking on recipe card
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.recipe-card h3').forEach(title => {
+                title.addEventListener('click', () => {
+                    const details = title.nextElementSibling;
+                    details.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation sidebar -->
+        <div class="app-sidebar">
+            <div class="sidebar-header">
+                <h1>Recipe Finder</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="{{ url_for('home_page') }}" class="{% if active_tab == 'home' %}active{% endif %}">Home</a></li>
+                    <li><a href="{{ url_for('resep_page') }}" class="{% if active_tab == 'resep' %}active{% endif %}">Recipes</a></li>
+                    <li><a href="{{ url_for('ai_page') }}" class="{% if active_tab == 'ai' %}active{% endif %}">AI Assistant</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <p>&copy; 2025 Recipe Finder</p>
+            </div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="chat-main">
+            <div class="chat-header">
+                <h2>Home</h2>
+            </div>
+            
+            <div class="chat-body">
+                <section class="welcome-section">
+                    <h2>{{ welcome_text }}</h2>
+                    <p>{{ description }}</p>
+                    <a href="{{ url_for('ai_page') }}" class="button">Try the AI Assistant</a>
+                </section>
+                
+                <section class="features-section">
+                    <h3>Features</h3>
+                    <ul>
+                        {% for feature in features %}
+                        <li>
+                            <strong>{{ feature.title }}</strong>
+                            <p>{{ feature.description }}</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
