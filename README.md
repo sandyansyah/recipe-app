@@ -446,6 +446,19 @@ systemctl status nginx     # Nginx status
 systemctl status flask-app # Flask service status
 ```
 
+# Kill proses Flask yang sedang berjalan
+pkill -f "python3 app.py"
+
+# Masuk ke direktori aplikasi
+cd /var/www/recipe-app
+
+# Aktifkan virtual environment
+source venv/bin/activate
+
+# Jalankan ulang Flask
+nohup python3 app.py > flask.log 2>&1 &
+
+
 ### Flask App Management
 ```bash
 # Check Flask process
