@@ -489,7 +489,299 @@ git remote -v
 git reset --hard origin/main
 git pull origin main
 ```
+# GitHub to Server Deployment Guide
 
+## 🚀 Quick Start Deployment
+
+### Prerequisites
+- Server dengan akses SSH/root
+- Git terinstall di server
+- Python 3.x dan virtual environment
+- Repository GitHub sudah di-clone ke server
+
+## 📋 Standard Deployment Workflow
+
+### 1. Persiapan Awal (Sekali Setup)
+```bash
+# Clone repository
+git clone https://github.com/username/repository-name.git
+cd repository-name
+
+# Setup virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Deployment Rutin
+
+#### Method A: Safe Pull (Recommended)
+```bash
+# Masuk ke direktori project
+cd /var/www/recipe-app
+
+# Stop aplikasi yang berjalan
+pkill -f "python3 app.py"
+
+# Backup perubahan lokal (jika ada)
+git stash push -m "backup before pull $(date)"
+
+# Pull update terbaru
+git pull origin main
+
+# Aktifkan virtual environment
+source venv/bin/activate
+
+# Install/update dependencies jika ada perubahan
+pip install -r requirements.txt
+
+# Test aplikasi
+python3 app.py
+
+# Jika test OK, jalankan di background
+nohup python3 app.py > flask.log 2>&1 &
+```
+
+#### Method B: Force Pull (Jika Ada Konflik)
+```bash
+# Stop aplikasi
+pkill -f "python3 app.py"
+
+# Force reset ke versi remote (HATI-HATI: hapus local changes)
+git fetch origin
+git reset --hard origin/main
+git clean -fd
+
+# Aktifkan venv dan install dependencies
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Restart aplikasi
+nohup python3 app.py > flask.log 2>&1 &
+```
+
+## 🔧 Troubleshooting Common Issues
+
+### Issue 1: Merge Conflicts
+**Error:** `<<<<<<< HEAD`, `=======`, `>>>>>>> commit_hash`
+
+**Solution:**
+```bash
+# Method 1: Abort dan reset
+git merge --abort
+git reset --hard origin/main
+
+# Method 2: Manual resolve (untuk advanced users)
+nano [conflicted_file]  # Edit dan hapus conflict markers
+git add .
+git commit -m "Resolve merge conflicts"
+```
+
+### Issue 2: Module Not Found
+**Error:** `ModuleNotFoundError: No module named 'xxx'`
+
+**Solution:**
+```bash
+# Install missing module
+pip install [module_name]
+
+# Atau install semua dari requirements
+pip install -r requirements.txt
+
+# Update requirements.txt
+pip freeze > requirements.txt
+```
+
+### Issue 3: Permission Denied
+**Error:** `Permission denied`
+
+**Solution:**
+```bash
+# Ganti ownership ke user yang benar
+sudo chown -R $USER:$USER /var/www/recipe-app
+
+# Atau jalankan dengan sudo (not recommended)
+sudo git pull origin main
+```
+
+### Issue 4: Flask Not Starting
+**Error:** `Exit 1` atau aplikasi crash
+
+**Solution:**
+```bash
+# Check error log
+cat flask.log
+
+# Test manual untuk lihat error
+python3 app.py
+
+# Check syntax file utama
+python3 -m py_compile app.py
+```
+
+## 📁 Project Structure Recommendations
+
+```
+/var/www/recipe-app/
+├── app.py                 # Main Flask application
+├── requirements.txt       # Python dependencies
+├── flask.log             # Application logs
+├── README.md             # This documentation
+├── .gitignore            # Git ignore rules
+├── logic/                # Application logic
+│   ├── __init__.py
+│   ├── home.py
+│   ├── ai.py
+│   └── diskusi.py
+├── templates/            # HTML templates
+├── static/               # CSS, JS, images
+└── venv/                # Virtual environment (di .gitignore)
+```
+
+## 🔄 Git Configuration untuk Smooth Deployment
+
+### Setup Git Config (Sekali saja)
+```bash
+# Set merge strategy
+git config pull.rebase false
+git config merge.ours.driver true
+
+# Set user info
+git config user.name "Server Deployment"
+git config user.email "deploy@server.com"
+
+# Auto cleanup
+git config fetch.prune true
+```
+
+### .gitignore Recommendations
+```gitignore
+# Virtual Environment
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+flask.log
+
+# Environment Variables
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+```
+
+## 🚦 Deployment Checklist
+
+### Pre-Deployment
+- [ ] Code sudah di-commit dan push ke GitHub
+- [ ] Dependencies sudah di-update di requirements.txt
+- [ ] Environment variables sudah di-set
+- [ ] Database migration (jika ada) sudah dijalankan
+
+### Deployment Process
+- [ ] Stop aplikasi yang berjalan
+- [ ] Backup perubahan lokal (jika ada)
+- [ ] Pull code terbaru dari GitHub
+- [ ] Install/update dependencies
+- [ ] Test aplikasi secara manual
+- [ ] Restart aplikasi di background
+- [ ] Verify aplikasi berjalan dengan benar
+
+### Post-Deployment
+- [ ] Check logs untuk error
+- [ ] Test endpoint utama
+- [ ] Monitor performance
+- [ ] Backup database (jika ada)
+
+## 🔧 Useful Commands
+
+### Monitoring
+```bash
+# Check running processes
+ps aux | grep python3
+
+# Check port usage
+netstat -tlnp | grep :5000
+
+# Monitor logs real-time
+tail -f flask.log
+
+# Check disk space
+df -h
+```
+
+### Maintenance
+```bash
+# Clear logs
+> flask.log
+
+# Update system packages (Ubuntu)
+sudo apt update && sudo apt upgrade
+
+# Clean pip cache
+pip cache purge
+
+# Remove unused packages
+pip autoremove
+```
+
+## 🚨 Emergency Recovery
+
+### Jika Aplikasi Rusak Total
+```bash
+# 1. Backup current state
+cp -r /var/www/recipe-app /var/www/recipe-app-backup-$(date +%Y%m%d)
+
+# 2. Fresh clone
+rm -rf /var/www/recipe-app
+git clone https://github.com/username/repository-name.git /var/www/recipe-app
+cd /var/www/recipe-app
+
+# 3. Setup environment
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 4. Restore data (jika ada)
+cp /var/www/recipe-app-backup-*/user.json ./
+
+# 5. Start application
+nohup python3 app.py > flask.log 2>&1 &
+```
+
+## 📞 Support Information
+
+- **Repository:** https://github.com/username/repository-name
+- **Server Path:** `/var/www/recipe-app`
+- **Log File:** `/var/www/recipe-app/flask.log`
+- **Port:** 5000 (default Flask)
+
+## 📝 Notes
+
+- Selalu backup sebelum deployment ke production
+- Test di environment staging dulu sebelum production
+- Monitor logs setelah deployment
+- Gunakan branching strategy untuk development
+- Setup CI/CD untuk automation (GitHub Actions, etc.)
+
+---
+
+**Last Updated:** $(date)  
+**Version:** 1.0  
+**Maintainer:** Development Team
 ---
 
 ## 🌐 Access URLs
