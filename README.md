@@ -198,21 +198,21 @@ ps aux | grep python3
 
 ### 1. DNS Configuration (Domainesia)
 1. Login ke panel Domainesia
-2. Pilih domain `sandykaa.com`
+2. Pilih domain `domain.com`
 3. DNS Management
 4. Tambah A record:
    - **Type:** A
-   - **Name:** aii
-   - **Value:** 47.84.58.176
+   - **Name:** rpl
+   - **Value:** ip public
    - **TTL:** 300
 
 ### 2. Test Domain (wait 5-15 minutes)
 ```bash
 # Test domain resolution
-ping aii.sandykaa.com
+ping rpl.domain.com
 
 # Test website
-curl -H "Host: aii.sandykaa.com" localhost
+curl -H "Host: rpl.domain.com" localhost
 ```
 
 ### 3. SSL Certificate (Optional)
@@ -221,7 +221,7 @@ curl -H "Host: aii.sandykaa.com" localhost
 sudo apt install certbot python3-certbot-nginx -y
 
 # Setup SSL
-sudo certbot --nginx -d aii.sandykaa.com
+sudo certbot --nginx -d rpl.domain.com
 ```
 
 ---
