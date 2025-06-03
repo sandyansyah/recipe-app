@@ -1,0 +1,64 @@
+{
+  "recipes": [
+    {
+      "name": "Nasi Goreng",
+      "ingredients": ["nasi", "telur", "bawang merah", "bawang putih", "kecap manis", "minyak goreng", "garam", "lada"],
+      "instructions": "1. Panaskan minyak dan tumis bawang merah dan bawang putih. 2. Masukkan telur dan aduk hingga matang. 3. Tambahkan nasi, kecap manis, garam, dan lada. 4. Aduk rata hingga matang."
+    },
+    {
+      "name": "Mie Goreng",
+      "ingredients": ["mie", "telur", "bawang merah", "bawang putih", "kecap manis", "sawi", "minyak goreng", "garam", "lada"],
+      "instructions": "1. Rebus mie hingga matang dan tiriskan. 2. Panaskan minyak dan tumis bawang merah dan bawang putih. 3. Masukkan telur dan aduk hingga matang. 4. Tambahkan mie, sawi, kecap manis, garam, dan lada. 5. Aduk rata hingga matang."
+    },
+    {
+      "name": "Telur Dadar",
+      "ingredients": ["telur", "bawang merah", "garam", "lada", "minyak goreng"],
+      "instructions": "1. Kocok telur, tambahkan garam dan lada. 2. Iris bawang merah dan campur ke telur. 3. Panaskan minyak dan goreng telur hingga matang."
+    },
+    {
+      "name": "Tumis Kangkung",
+      "ingredients": ["kangkung", "bawang merah", "bawang putih", "cabai", "garam", "minyak goreng"],
+      "instructions": "1. Cuci kangkung dan potong-potong. 2. Panaskan minyak dan tumis bawang merah, bawang putih, dan cabai. 3. Masukkan kangkung, garam dan aduk hingga matang."
+    },
+    {
+      "name": "Soto Ayam",
+      "ingredients": ["ayam", "bawang merah", "bawang putih", "kunyit", "serai", "daun jeruk", "garam", "lada", "air"],
+      "instructions": "1. Rebus ayam hingga matang. 2. Tumis bumbu halus (bawang merah, bawang putih, kunyit) bersama serai dan daun jeruk. 3. Masukkan tumisan bumbu ke dalam rebusan ayam. 4. Tambahkan garam dan lada. 5. Sajikan dengan taburan bawang goreng."
+    },
+    {
+      "name": "Rendang",
+      "ingredients": ["daging sapi", "santan", "bawang merah", "bawang putih", "cabai", "serai", "daun jeruk", "lengkuas", "garam", "gula"],
+      "instructions": "1. Haluskan bawang merah, bawang putih, dan cabai. 2. Tumis bumbu halus dengan serai, daun jeruk, dan lengkuas. 3. Masukkan daging sapi dan aduk rata. 4. Tambahkan santan, garam, dan gula. 5. Masak dengan api kecil hingga kuah mengental."
+    },
+    {
+      "name": "Tempe Goreng",
+      "ingredients": ["tempe", "bawang putih", "ketumbar", "garam", "kunyit", "air", "minyak goreng"],
+      "instructions": "1. Potong tempe sesuai selera. 2. Haluskan bawang putih, ketumbar, garam, dan kunyit. 3. Campurkan bumbu halus dengan air. 4. Rendam tempe dalam bumbu. 5. Goreng tempe hingga kecokelatan."
+    },
+    {
+      "name": "Sayur Asem",
+      "ingredients": ["kacang panjang", "jagung", "labu siam", "asam jawa", "bawang merah", "bawang putih", "garam", "gula", "air"],
+      "instructions": "1. Rebus air dengan asam jawa. 2. Tumis bawang merah dan bawang putih. 3. Masukkan tumisan ke dalam rebusan air asam. 4. Tambahkan sayuran, garam, dan gula. 5. Masak hingga sayuran matang."
+    },
+    {
+      "name": "Capcay",
+      "ingredients": ["wortel", "kembang kol", "sawi", "bawang putih", "bawang merah", "saus tiram", "garam", "lada", "air"],
+      "instructions": "1. Potong semua sayuran. 2. Tumis bawang merah dan bawang putih. 3. Masukkan sayuran, saus tiram, garam, dan lada. 4. Tambahkan sedikit air. 5. Masak hingga sayuran matang."
+    },
+    {
+      "name": "Bubur Ayam",
+      "ingredients": ["beras", "ayam", "bawang merah", "bawang putih", "daun salam", "garam", "air", "kecap manis"],
+      "instructions": "1. Rebus beras dengan banyak air hingga menjadi bubur. 2. Tumis bawang merah dan bawang putih. 3. Masukkan ayam dan daun salam ke tumisan. 4. Tambahkan tumisan ke dalam bubur. 5. Tambahkan garam dan kecap manis sesuai selera."
+    },
+    {
+      "name": "Nasi Uduk",
+      "ingredients": ["beras", "santan", "daun salam", "serai", "garam"],
+      "instructions": "1. Cuci beras hingga bersih. 2. Masak beras dengan santan, daun salam, serai, dan garam. 3. Aduk sesekali hingga air menyusut. 4. Kukus nasi hingga matang."
+    },
+    {
+      "name": "Tahu Goreng",
+      "ingredients": ["tahu", "bawang putih", "garam", "minyak goreng"],
+      "instructions": "1. Potong tahu sesuai selera. 2. Haluskan bawang putih dan garam. 3. Balurkan bumbu ke tahu. 4. Goreng tahu hingga kecokelatan."
+    }
+  ]
+}

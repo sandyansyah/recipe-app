@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOD of FOOD - Diskusi Komunitas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Consistent styling with ai.html */
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-solid: #667eea;
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --secondary-solid: #f5576c;
+            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --accent-solid: #4facfe;
+            --success: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --success-solid: #43e97b;
+            --light: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --border-radius: 20px;
+            --border-radius-sm: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(360deg); }
+        }
+
+        .auth-bar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom-left-radius: var(--border-radius);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom-right-radius: var(--border-radius);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .auth-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--light);
+            background: transparent;
+            color: var(--light);
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+            display: inline-block;
+        }
+        
+        .auth-btn:hover {
+            background: var(--light);
+            color: var(--primary-solid);
+            transform: translateY(-2px);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--light);
+        }
+        
+        .user-name {
+            font-weight: bold;
+            color: var(--light);
+            background: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .logout-btn {
+            padding: 0.4rem 1rem;
+            background: var(--secondary);
+            color: var(--light);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            color: var(--light);
+            text-decoration: none;
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-tab:hover::before {
+            left: 100%;
+        }
+
+        .nav-tab.active {
+            background: var(--accent);
+            color: var(--light);
+            border-color: var(--accent-solid);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .nav-tab.active::before {
+            display: none;
+        }
+
+        .nav-tab-icon {
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .nav-tab:hover .nav-tab-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-tab.active .nav-tab-icon {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .nav-tab-text {
+            font-weight: 600;
+        }
+
+        /* Chat Interface */
+        .chat-interface {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 160px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            margin: 1rem;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Encryption indicator styles */
+        .encryption-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .encryption-status.secure {
+            color: #16a34a;
+        }
+        
+        .encryption-status.warning {
+            color: #ea580c;
+        }
+        
+        .encryption-status-icon {
+            margin-right: 4px;
+        }
+        
+        /* Discussion styles */
+        .discussion-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .discussion-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .discussion-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .discussion-info {
+            font-size: 0.9rem;
+            color: var(--light);
+            opacity: 0.8;
+        }
+        
+        .discussion-participants {
+            font-size: 0.85rem;
+            color: var(--light);
+            opacity: 0.8;
+            padding: 6px 16px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .participants-count {
+            font-weight: 600;
+            color: var(--light);
+            opacity: 1;
+        }
+        
+        .discussion-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 18px;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        .message-bubble:hover {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            transform: translateY(-1px);
+        }
+        
+        .message-bubble.outgoing {
+            align-self: flex-end;
+            background: var(--accent);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .message-bubble.incoming {
+            align-self: flex-start;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom-left-radius: 6px;
+            color: #2d3748;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            color: inherit;
+        }
+        
+        .message-bubble.outgoing .message-sender {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .message-bubble.incoming .message-sender {
+            color: #374151;
+        }
+        
+        .message-time {
+            color: inherit;
+            opacity: 0.7;
+            font-size: 0.75rem;
+        }
+        
+        .message-content {
+            word-break: break-word;
+            color: inherit;
+            line-height: 1.4;
+            margin: 2px 0;
+        }
+        
+        .message-bubble.outgoing .message-content {
+            color: white;
+        }
+        
+        .message-bubble.incoming .message-content {
+            color: #1f2937;
+        }
+        
+        /* Image message styles */
+        .message-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .message-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .message-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 2px;
+            font-size: 0.7rem;
+            line-height: 1;
+        }
+        
+        .message-status {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .message-status-icon {
+            margin-right: 1px;
+        }
+        
+        .signature-valid {
+            color: #10b981;
+        }
+        
+        .message-bubble.outgoing .signature-valid {
+            color: #34d399;
+        }
+        
+        .signature-invalid {
+            color: #ef4444;
+        }
+        
+        .message-bubble.outgoing .signature-invalid {
+            color: #fca5a5;
+        }
+        
+        .message-input-container {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .message-form {
+            display: flex;
+            gap: 8px;
+            align-items: end;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            transition: all 0.2s ease;
+            resize: none;
+            min-height: 20px;
+            max-height: 100px;
+        }
+
+        .message-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .message-input:focus {
+            border-color: var(--accent-solid);
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        /* File upload button */
+        .file-upload-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            border: none;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(67, 233, 123, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-upload-button:hover {
+            background: var(--success-solid);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(67, 233, 123, 0.4);
+        }
+        
+        .file-upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .upload-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .send-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(79, 172, 254, 0.3);
+        }
+        
+        .send-button:hover {
+            background: var(--accent-solid);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(79, 172, 254, 0.4);
+        }
+        
+        .send-button:disabled {
+            background: rgba(79, 172, 254, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 1px 2px rgba(79, 172, 254, 0.2);
+        }
+        
+        .send-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Web3 styles */
+        .web3-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            margin-left: 4px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .message-bubble.outgoing .web3-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+        }
+        
+        .web3-icon {
+            margin-right: 2px;
+            font-size: 0.6rem;
+        }
+        
+        /* Pulse animation for new message notification */
+        @keyframes pulseNotification {
+            0% { 
+                box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+                transform: translateX(-50%) scale(1);
+            }
+            50% { 
+                box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+                transform: translateX(-50%) scale(1.02);
+            }
+            100% { 
+                box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+                transform: translateX(-50%) scale(1);
+            }
+        }
+        
+        .new-messages-notification {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+            animation: pulseNotification 2s infinite;
+            display: none;
+            z-index: 10;
+        }
+        
+        .new-messages-count {
+            font-weight: 600;
+            margin: 0 4px;
+        }
+        
+        /* Image preview overlay */
+        .image-preview-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .image-preview-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Encryption explanation modal */
+        .encryption-modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .encryption-modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            margin: 10% auto;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease-out;
+            color: var(--light);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .encryption-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .encryption-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .encryption-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--light);
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+        
+        .encryption-modal-close:hover {
+            color: var(--light);
+            opacity: 1;
+        }
+        
+        .encryption-modal-body {
+            margin-bottom: 24px;
+        }
+        
+        .encryption-step {
+            margin-bottom: 16px;
+            padding: 16px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .encryption-step-title {
+            font-weight: 600;
+            color: var(--light);
+            margin-bottom: 8px;
+        }
+        
+        .encryption-step-description {
+            color: var(--light);
+            opacity: 0.9;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--light);
+            opacity: 0.8;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            color: var(--light);
+            opacity: 0.6;
+        }
+        
+        .empty-state-text {
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+        }
+
+        /* Mobile Combined Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.5rem 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-nav-tabs {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .mobile-nav-tab {
+            padding: 0.3rem 0.6rem;
+            background: transparent;
+            color: var(--light);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            white-space: nowrap;
+        }
+
+        .mobile-nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            text-decoration: none;
+        }
+
+        .mobile-nav-tab.active {
+            background: var(--accent);
+            color: var(--light);
+            border-color: var(--accent-solid);
+        }
+
+        .mobile-nav-tab-icon {
+            font-size: 0.8rem;
+        }
+
+        .mobile-nav-tab-text {
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .mobile-auth-buttons {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+
+        .mobile-auth-btn {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--light);
+            background: transparent;
+            color: var(--light);
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.7rem;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .mobile-auth-btn:hover {
+            background: var(--light);
+            color: var(--primary-solid);
+        }
+
+        .mobile-user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--light);
+            font-size: 0.75rem;
+        }
+
+        .mobile-user-name {
+            font-weight: bold;
+            color: var(--light);
+            background: var(--accent);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+        }
+
+        .mobile-logout-btn {
+            padding: 0.2rem 0.6rem;
+            background: var(--secondary);
+            color: var(--light);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.65rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            /* Hide desktop navigation */
+            .nav-bar,
+            .auth-bar {
+                display: none;
+            }
+
+            /* Show mobile navigation */
+            .mobile-nav {
+                display: flex;
+            }
+
+            .app-container {
+                margin-top: 60px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .chat-interface {
+                margin: 0.5rem;
+            }
+            
+            .message-bubble {
+                max-width: 85%;
+                padding: 6px 10px;
+            }
+            
+            .discussion-messages {
+                padding: 8px;
+                gap: 8px;
+            }
+            
+            .message-input-container {
+                padding: 10px;
+            }
+            
+            .discussion-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding: 12px;
+            }
+            
+            .encryption-modal-content {
+                margin: 5% auto;
+                width: 90%;
+                padding: 16px;
+            }
+            
+            .message-header {
+                font-size: 0.75rem;
+            }
+            
+            .message-footer {
+                font-size: 0.65rem;
+            }
+            
+            .message-image {
+                max-width: 150px;
+                max-height: 150px;
+            }
+            
+            .file-upload-button,
+            .send-button {
+                width: 40px;
+                height: 40px;
+                border-radius: 20px;
+            }
+            
+            .upload-icon,
+            .send-icon {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-nav {
+                padding: 0.4rem 0.8rem;
+            }
+
+            .mobile-nav-tab {
+                padding: 0.25rem 0.4rem;
+                font-size: 0.65rem;
+                gap: 0.2rem;
+            }
+
+            .mobile-nav-tab-icon {
+                font-size: 0.7rem;
+            }
+
+            .mobile-nav-tab-text {
+                font-size: 0.6rem;
+            }
+
+            .mobile-auth-btn {
+                padding: 0.25rem 0.6rem;
+                font-size: 0.65rem;
+            }
+
+            .mobile-user-name {
+                padding: 0.15rem 0.4rem;
+                font-size: 0.65rem;
+            }
+
+            .mobile-logout-btn {
+                padding: 0.15rem 0.4rem;
+                font-size: 0.6rem;
+            }
+
+            .chat-interface {
+                margin: 0.25rem;
+                height: calc(100vh - 65px);
+            }
+
+            .discussion-header {
+                padding: 8px;
+            }
+
+            .discussion-title {
+                font-size: 1rem;
+            }
+
+            .discussion-info {
+                font-size: 0.8rem;
+            }
+
+            .app-container {
+                margin-top: 50px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .mobile-nav-tabs {
+                gap: 0.15rem;
+            }
+
+            .mobile-nav-tab-text {
+                display: none;
+            }
+
+            .mobile-nav-tab {
+                padding: 0.3rem;
+                border-radius: 6px;
+            }
+
+            .mobile-auth-buttons {
+                gap: 0.2rem;
+            }
+
+            .mobile-auth-btn {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.6rem;
+            }
+
+            .mobile-user-info {
+                gap: 0.3rem;
+            }
+
+            .chat-interface {
+                margin: 0.15rem;
+            }
+
+            .discussion-header {
+                padding: 6px;
+            }
+
+            .message-input {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+
+            .file-upload-button,
+            .send-button {
+                width: 36px;
+                height: 36px;
+            }
+
+            .upload-icon,
+            .send-icon {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <!-- Mobile Navigation (visible on mobile only) -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-tabs">
+            <a href="/" class="mobile-nav-tab">
+                <span class="mobile-nav-tab-icon">🏠</span>
+                <span class="mobile-nav-tab-text">Home</span>
+            </a>
+            <a href="/diskusi" class="mobile-nav-tab active">
+                <span class="mobile-nav-tab-icon">💬</span>
+                <span class="mobile-nav-tab-text">Diskusi</span>
+            </a>
+            <a href="/ai" class="mobile-nav-tab">
+                <span class="mobile-nav-tab-icon">🤖</span>
+                <span class="mobile-nav-tab-text">AI</span>
+            </a>
+        </div>
+        
+        <div class="mobile-auth-section">
+            {% if current_user %}
+            <div class="mobile-user-info">
+                <span class="mobile-user-name">{{ current_user.username }}</span>
+                <a href="/logout" class="mobile-logout-btn">Logout</a>
+            </div>
+            {% else %}
+            <div class="mobile-auth-buttons">
+                <a href="/login-page" class="mobile-auth-btn">Login</a>
+                <a href="/register-page" class="mobile-auth-btn">Register</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Desktop Navigation Bar -->
+    <div class="nav-bar">
+        <div class="nav-tabs">
+            <a href="/" class="nav-tab">
+                <span class="nav-tab-icon">🏠</span>
+                <span class="nav-tab-text">Home</span>
+            </a>
+            <a href="/diskusi" class="nav-tab active">
+                <span class="nav-tab-icon">💬</span>
+                <span class="nav-tab-text">Diskusi</span>
+            </a>
+            <a href="/ai" class="nav-tab">
+                <span class="nav-tab-icon">🤖</span>
+                <span class="nav-tab-text">AI Assistant</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Authentication Bar -->
+    <div class="auth-bar">
+        <!-- Jinja2 conditional rendering -->
+        {% if current_user %}
+        <div class="user-info">
+            <span>Halo, <span class="user-name">{{ current_user.username }}</span></span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+        {% else %}
+        <div class="auth-buttons">
+            <a href="/login-page" class="auth-btn login">Login</a>
+            <a href="/register-page" class="auth-btn register">Register</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="app-container">
+        <!-- Chat Interface -->
+        <div class="chat-interface">
+            <div class="discussion-container">
+                <div class="discussion-header">
+                    <div class="discussion-title">
+                        Diskusi Komunitas
+                        <div class="encryption-status secure" id="encryptionStatus">
+                            <span class="encryption-status-icon">🔐</span>
+                            <span>CryptSan Encrypted</span>
+                        </div>
+                    </div>
+                    <div class="discussion-info">
+                        Semua pesan dienkripsi dengan CryptSan AES-256-CBC dan dapat dibaca oleh anggota komunitas
+                        <button id="showEncryptionInfo" style="background: none; border: none; text-decoration: underline; color: var(--light); opacity: 0.8; cursor: pointer; font-size: 0.9rem;">Lihat Detail</button>
+                    </div>
+                </div>
+                
+                <div class="discussion-participants">
+                    <span class="participants-count">{{ messages|length }} pesan</span> dalam diskusi komunitas
+                </div>
+                
+                <div class="discussion-messages" id="messageContainer">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="message-bubble {% if message.sender_id == current_user.id|string %}outgoing{% else %}incoming{% endif %}" data-message-id="{{ message.id }}">
+                                <div class="message-header">
+                                    <div class="message-sender">
+                                        {{ message.sender_username }}
+                                        {% if message.sender_id in web3_users|default([]) %}
+                                            <span class="web3-badge">
+                                                <span class="web3-icon">🦊</span>
+                                                <span>Web3</span>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="message-time">
+                                        {{ message.timestamp|datetime }}
+                                    </div>
+                                </div>
+                                <div class="message-content">
+                                    {{ message.content }}
+                                    {% if message.image_url %}
+                                        <img src="{{ message.image_url }}" alt="Shared image" class="message-image" onclick="showImagePreview(this.src)">
+                                    {% endif %}
+                                </div>
+                                <div class="message-footer">
+                                    <div class="message-status">
+                                        {% if message.signature_valid %}
+                                            <span class="message-status-icon signature-valid">✓</span>
+                                            <span class="signature-valid">Verified</span>
+                                        {% else %}
+                                            <span class="message-status-icon signature-invalid">⚠️</span>
+                                            <span class="signature-invalid">Unverified</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💬</div>
+                            <div class="empty-state-text">Belum ada pesan. Jadilah yang pertama memulai percakapan!</div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="new-messages-notification" id="newMessagesNotification">
+                    <span id="newMessagesCount" class="new-messages-count">0</span> pesan baru
+                </div>
+                
+                <div class="message-input-container">
+                    <form class="message-form" id="messageForm" method="POST" action="{{ url_for('diskusi_page') }}" enctype="multipart/form-data">
+                        <button type="button" class="file-upload-button">
+                            <input type="file" name="image" id="imageInput" class="file-upload-input" accept="image/*">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M7 10L12 5L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 5V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <input type="text" name="message" id="messageInput" class="message-input" placeholder="Ketik pesan..." autocomplete="off">
+                        <button type="submit" class="send-button" id="sendButton">
+                            <svg class="send-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Preview Overlay -->
+    <div id="imagePreviewOverlay" class="image-preview-overlay" onclick="hideImagePreview()">
+        <img id="imagePreviewContent" class="image-preview-content" src="" alt="Preview">
+    </div>
+    
+    <!-- Encryption Information Modal -->
+    <div id="encryptionModal" class="encryption-modal">
+        <div class="encryption-modal-content">
+            <div class="encryption-modal-header">
+                <div class="encryption-modal-title">
+                    <span>🔐</span>
+                    <span>Sistem Enkripsi CryptSan</span>
+                </div>
+                <button class="encryption-modal-close" id="closeEncryptionModal">&times;</button>
+            </div>
+            <div class="encryption-modal-body">
+                <p>Kami menggunakan sistem enkripsi CryptSan yang canggih untuk menjaga kerahasiaan semua pesan komunitas:</p>
+                
+                <div class="encryption-step">
+                    <div class="encryption-step-title">1. Shared Group Encryption (AES-256-CBC)</div>
+                    <div class="encryption-step-description">
+                        Semua pesan dienkripsi menggunakan kunci grup yang sama, memungkinkan semua anggota komunitas untuk saling membaca pesan dengan aman.
+                    </div>
+                </div>
+                
+                <div class="encryption-step">
+                    <div class="encryption-step-title">2. Key Derivation dengan PBKDF2-SHA256</div>
+                    <div class="encryption-step-description">
+                        Kunci enkripsi diturunkan menggunakan PBKDF2 dengan 100,000 iterasi dan SHA-256 hashing untuk keamanan maksimal.
+                    </div>
+                </div>
+                
+                <div class="encryption-step">
+                    <div class="encryption-step-title">3. Integritas Pesan dengan SHA-256</div>
+                    <div class="encryption-step-description">
+                        Setiap pesan memiliki hash SHA-256 untuk memverifikasi bahwa pesan tidak diubah atau dirusak selama pengiriman.
+                    </div>
+                </div>
+                
+                <div class="encryption-step">
+                    <div class="encryption-step-title">4. Database CryptSan (.cryptsan)</div>
+                    <div class="encryption-step-description">
+                        Semua pesan disimpan dalam database SQLite terenkripsi dengan format khusus CryptSan untuk perlindungan data tingkat enterprise.
+                    </div>
+                </div>
+                
+                <p style="margin-top: 16px; font-weight: 600; color: var(--success-solid);">Pesan Anda aman dengan enkripsi CryptSan - hanya anggota komunitas yang dapat mengakses pesan.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageForm = document.getElementById('messageForm');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const imageInput = document.getElementById('imageInput');
+            const newMessagesNotification = document.getElementById('newMessagesNotification');
+            const newMessagesCount = document.getElementById('newMessagesCount');
+            const encryptionModal = document.getElementById('encryptionModal');
+            const showEncryptionInfo = document.getElementById('showEncryptionInfo');
+            const closeEncryptionModal = document.getElementById('closeEncryptionModal');
+            
+            // Image preview functions
+            window.showImagePreview = function(src) {
+                const overlay = document.getElementById('imagePreviewOverlay');
+                const content = document.getElementById('imagePreviewContent');
+                content.src = src;
+                overlay.style.display = 'flex';
+            };
+            
+            window.hideImagePreview = function() {
+                const overlay = document.getElementById('imagePreviewOverlay');
+                overlay.style.display = 'none';
+            };
+            
+            // Image upload handling
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                        alert('File terlalu besar. Maksimal 5MB.');
+                        return;
+                    }
+                    
+                    if (!file.type.startsWith('image/')) {
+                        alert('Hanya file gambar yang diizinkan.');
+                        return;
+                    }
+                    
+                    // Auto submit form when image is selected
+                    messageForm.submit();
+                }
+            });
+            
+            // Scroll to bottom of messages
+            function scrollToBottom() {
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            }
+            
+            // Scroll to bottom initially
+            scrollToBottom();
+            
+            // Format date/time
+            function formatDateTime(isoString) {
+                const date = new Date(isoString);
+                return date.toLocaleString('id-ID', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            
+            // Check for new messages periodically
+            let lastMessageId = null;
+            const messages = document.querySelectorAll('.message-bubble');
+            if (messages.length > 0) {
+                lastMessageId = messages[messages.length - 1].getAttribute('data-message-id');
+            }
+            
+            let newMessagesCounter = 0;
+            let isAtBottom = true;
+            
+            // Check if user is at bottom of message container
+            messageContainer.addEventListener('scroll', function() {
+                isAtBottom = (messageContainer.scrollHeight - messageContainer.scrollTop) <= (messageContainer.clientHeight + 50);
+                if (isAtBottom) {
+                    newMessagesNotification.style.display = 'none';
+                    newMessagesCounter = 0;
+                }
+            });
+            
+            // Show encryption info modal
+            showEncryptionInfo.addEventListener('click', function() {
+                encryptionModal.style.display = 'block';
+            });
+            
+            // Close encryption info modal
+            closeEncryptionModal.addEventListener('click', function() {
+                encryptionModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === encryptionModal) {
+                    encryptionModal.style.display = 'none';
+                }
+            });
+            
+            // Poll for new messages
+            function pollNewMessages() {
+                fetch(`/api/diskusi/messages?after_id=${lastMessageId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.messages && data.messages.length > 0) {
+                            // Check if the message container is empty
+                            if (messageContainer.querySelector('.empty-state')) {
+                                messageContainer.innerHTML = '';
+                            }
+                            
+                            data.messages.forEach(message => {
+                                // Create message element
+                                const messageElement = document.createElement('div');
+                                messageElement.className = `message-bubble ${message.sender_id == '{{ current_user.id }}' ? 'outgoing' : 'incoming'}`;
+                                messageElement.setAttribute('data-message-id', message.id);
+                                
+                                // Create message content
+                                let imageHtml = '';
+                                if (message.image_url) {
+                                    imageHtml = `<img src="${message.image_url}" alt="Shared image" class="message-image" onclick="showImagePreview('${message.image_url}')">`;
+                                }
+                                
+                                messageElement.innerHTML = `
+                                    <div class="message-header">
+                                        <div class="message-sender">
+                                            ${message.sender_username}
+                                            ${message.is_web3 ? `
+                                                <span class="web3-badge">
+                                                    <span class="web3-icon">🦊</span>
+                                                    <span>Web3</span>
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                        <div class="message-time">
+                                            ${formatDateTime(message.timestamp)}
+                                        </div>
+                                    </div>
+                                    <div class="message-content">
+                                        ${message.content}
+                                        ${imageHtml}
+                                    </div>
+                                    <div class="message-footer">
+                                        <div class="message-status">
+                                            ${message.signature_valid ? `
+                                                <span class="message-status-icon signature-valid">✓</span>
+                                                <span class="signature-valid">Verified</span>
+                                            ` : `
+                                                <span class="message-status-icon signature-invalid">⚠️</span>
+                                                <span class="signature-invalid">Unverified</span>
+                                            `}
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Add message to container
+                                messageContainer.appendChild(messageElement);
+                                
+                                // Update last message ID
+                                lastMessageId = message.id;
+                                
+                                // Increment new messages counter if not at bottom
+                                if (!isAtBottom) {
+                                    newMessagesCounter++;
+                                    newMessagesCount.textContent = newMessagesCounter;
+                                    newMessagesNotification.style.display = 'block';
+                                }
+                            });
+                            
+                            // Update participants count
+                            const participantsCount = document.querySelector('.participants-count');
+                            if (participantsCount) {
+                                const currentCount = parseInt(participantsCount.textContent.split(' ')[0]) || 0;
+                                participantsCount.textContent = (currentCount + data.messages.length) + ' pesan';
+                            }
+                            
+                            // Scroll to bottom if already at bottom
+                            if (isAtBottom) {
+                                scrollToBottom();
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error fetching new messages:', error));
+            }
+            
+            // Start polling
+            const pollInterval = setInterval(pollNewMessages, 5000);
+            
+            // Click notification to scroll to bottom
+            newMessagesNotification.addEventListener('click', function() {
+                scrollToBottom();
+                newMessagesNotification.style.display = 'none';
+                newMessagesCounter = 0;
+            });
+            
+            // Handle form submission
+            messageForm.addEventListener('submit', function(e) {
+                // Check if either message or image is provided
+                const hasMessage = messageInput.value.trim().length > 0;
+                const hasImage = imageInput.files.length > 0;
+                
+                if (!hasMessage && !hasImage) {
+                    e.preventDefault();
+                    alert('Silakan ketik pesan atau pilih gambar untuk dikirim.');
+                    return;
+                }
+                
+                // Disable button to prevent multiple submissions
+                sendButton.disabled = true;
+                
+                // Clear inputs after short delay
+                setTimeout(() => {
+                    messageInput.value = '';
+                    imageInput.value = '';
+                    messageInput.focus();
+                }, 10);
+                
+                // Enable button after short delay
+                setTimeout(() => {
+                    sendButton.disabled = false;
+                }, 500);
+            });
+            
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', function() {
+                clearInterval(pollInterval);
+            });
+        });
+    </script>
+</body>
+</html>
