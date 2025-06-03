@@ -19,8 +19,8 @@ Panduan lengkap deployment aplikasi Flask Recipe AI dari setup server hingga pro
 
 ### 1. Initial Server Access
 ```bash
-# SSH ke server Alibaba Cloud ECS
-ssh root@47.84.58.176
+# SSH ke server
+ssh root@ip public
 ```
 
 ### 2. System Update
