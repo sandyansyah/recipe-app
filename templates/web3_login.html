@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder - Multi-Chain Web3 Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #14f195 100%);
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: 'Arial', sans-serif;
+            padding: 2rem 1rem;
+        }
+        
+        .web3-login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 550px;
+            position: relative;
+            overflow: visible;
+            text-align: center;
+            margin: 2rem auto;
+            min-height: auto;
+        }
+        
+        .web3-login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #f7931e, #ac7dd6, #0088cc, #14f195, #9945ff);
+        }
+        
+        .web3-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .web3-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        
+        .web3-header p {
+            color: #666;
+            margin: 0;
+        }
+        
+        .chain-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 15px;
+        }
+        
+        .chain-tab {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .chain-tab.active {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #007bff;
+        }
+        
+        .chain-tab:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .chain-content {
+            display: none;
+        }
+        
+        .chain-content.active {
+            display: block;
+        }
+        
+        .wallet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .wallet-option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 1.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+        
+        .wallet-option:hover {
+            border-color: #007bff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,123,255,0.15);
+        }
+        
+        .wallet-option.available {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .wallet-option.available:hover {
+            border-color: #28a745;
+            background: #e8f5e8;
+        }
+        
+        .wallet-option.unavailable {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .wallet-option.unavailable:hover {
+            transform: none;
+            border-color: #e9ecef;
+        }
+        
+        .wallet-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .wallet-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .wallet-status {
+            font-size: 0.7rem;
+            color: #666;
+        }
+        
+        .wallet-status.available {
+            color: #28a745;
+        }
+        
+        .wallet-status.unavailable {
+            color: #dc3545;
+        }
+        
+        .chain-badge {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .ethereum-badge {
+            background: #627eea;
+        }
+        
+        .solana-badge {
+            background: #9945ff;
+        }
+        
+        .install-link {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .wallet-option.unavailable:hover .install-link {
+            opacity: 1;
+        }
+        
+        .wallet-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .wallet-address {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #666;
+            word-break: break-all;
+        }
+        
+        .connected-wallet {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chain-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .sign-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .sign-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .status-message {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .auth-links {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e1e1;
+        }
+        
+        .auth-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 0.5rem;
+        }
+        
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .back-home {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-home:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .network-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #0066cc;
+        }
+        
+        .multi-chain-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #856404;
+            font-size: 0.9rem;
+        }
+        
+        .security-info {
+            background: linear-gradient(135deg, #007bff0a, #007bff0a);
+            border: 1px solid #007bff20;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .security-info strong {
+            color: #007bff;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .security-info p {
+            margin: 0.5rem 0;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .security-info small {
+            display: block;
+            margin-top: 1rem;
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 6px;
+            border-left: 3px solid #007bff;
+        }
+        
+        .features-list {
+            background: #f8fff9;
+            border: 1px solid #28a74520;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .features-list ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .features-list li {
+            margin: 0.8rem 0;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .features-list li strong {
+            color: #28a745;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+            
+            .web3-login-container {
+                margin: 1rem auto;
+                padding: 2rem;
+                max-width: 95%;
+            }
+            
+            .wallet-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .wallet-option {
+                padding: 1rem 0.5rem;
+            }
+            
+            .wallet-icon {
+                font-size: 2rem;
+            }
+            
+            .chain-selector {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .back-home {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 1rem;
+                display: inline-block;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .web3-login-container {
+                padding: 1.5rem;
+            }
+            
+            .web3-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .wallet-grid {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+            
+            .chain-tab {
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-home">← Back to Home</a>
+    
+    <div class="web3-login-container">
+        <div class="web3-header">
+            <h1>🌐 Multi-Chain Web3 Login</h1>
+            <p>Connect with Ethereum or Solana wallets</p>
+        </div>
+        
+        {% if message %}
+        <div class="status-message status-{{ message_type }}" style="display: block;">
+            {{ message }}
+        </div>
+        {% endif %}
+        
+        <!-- Security Info -->
+        {% if current_user and current_user.is_authenticated %}
+        <div class="security-info">
+            <strong>🔒 Secure {{ current_user.chain_name if current_user.chain_name else 'Blockchain' }} Session</strong>
+            <p>
+                Sesi Anda diamankan dengan teknologi blockchain {{ current_user.chain_name if current_user.chain_name else 'terpilih' }} melalui {{ current_user.wallet_name if current_user.wallet_name else 'wallet Anda' }}.
+            </p>
+            <p>
+                <strong>Detail Koneksi:</strong>
+            </p>
+            <small>
+                🔗 Wallet: <strong>{{ current_user.wallet_name if current_user.wallet_name else 'Connected Wallet' }}</strong><br>
+                ⛓️ Chain: <strong>{{ current_user.chain_name if current_user.chain_name else 'Blockchain Network' }}</strong><br>
+                📍 Address: <strong>{{ current_user.wallet_address[:10] if current_user.wallet_address else 'Connected' }}...</strong>
+            </small>
+        </div>
+        {% endif %}
+        
+        <!-- Multi-chain Features -->
+        <div class="features-list">
+            <strong>🚀 Fitur Multi-Chain Recipe Finder:</strong>
+            <ul>
+                <li><strong>Universal Login:</strong> Satu akun untuk semua wallet Anda</li>
+                <li><strong>Cross-Chain Support:</strong> Switch antar Ethereum dan Solana tanpa kehilangan data</li>
+                <li><strong>Secure Authentication:</strong> Login dengan signature wallet, tidak ada password</li>
+                <li><strong>Gas-Free Experience:</strong> Tidak perlu gas untuk login, hanya untuk transaksi</li>
+                <li><strong>Privacy First:</strong> Data pribadi Anda tetap aman dan terenkripsi</li>
+            </ul>
+        </div>
+        
+        <!-- Chain Selector -->
+        <div class="chain-selector">
+            <button class="chain-tab active" data-chain="ethereum">
+                ⟠ Ethereum
+            </button>
+            <button class="chain-tab" data-chain="solana">
+                ◎ Solana
+            </button>
+        </div>
+        
+        <!-- Ethereum Wallets -->
+        <div id="ethereum-content" class="chain-content active">
+            <div class="network-info">
+                🔷 <strong>Ethereum Network:</strong> Connect with your favorite Ethereum wallet
+            </div>
+            
+            <div class="wallet-grid">
+                <!-- MetaMask -->
+                <div class="wallet-option" data-wallet="metamask" data-chain="ethereum">
+                    <div class="chain-badge ethereum-badge">ETH</div>
+                    <div class="wallet-icon">🦊</div>
+                    <div class="wallet-name">MetaMask</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://metamask.io/download/" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- OKX Wallet -->
+                <div class="wallet-option" data-wallet="okx" data-chain="ethereum">
+                    <div class="chain-badge ethereum-badge">ETH</div>
+                    <div class="wallet-icon">⭕</div>
+                    <div class="wallet-name">OKX Wallet</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://www.okx.com/web3" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- Coinbase Wallet -->
+                <div class="wallet-option" data-wallet="coinbase" data-chain="ethereum">
+                    <div class="chain-badge ethereum-badge">ETH</div>
+                    <div class="wallet-icon">🔵</div>
+                    <div class="wallet-name">Coinbase</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://www.coinbase.com/wallet" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- WalletConnect -->
+                <div class="wallet-option" data-wallet="walletconnect" data-chain="ethereum">
+                    <div class="chain-badge ethereum-badge">ETH</div>
+                    <div class="wallet-icon">🌉</div>
+                    <div class="wallet-name">WalletConnect</div>
+                    <div class="wallet-status available">Available</div>
+                </div>
+                
+                <!-- Trust Wallet -->
+                <div class="wallet-option" data-wallet="trust" data-chain="ethereum">
+                    <div class="chain-badge ethereum-badge">ETH</div>
+                    <div class="wallet-icon">🛡️</div>
+                    <div class="wallet-name">Trust Wallet</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://trustwallet.com/" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- Rainbow Wallet -->
+                <div class="wallet-option" data-wallet="rainbow" data-chain="ethereum">
+                    <div class="chain-badge ethereum-badge">ETH</div>
+                    <div class="wallet-icon">🌈</div>
+                    <div class="wallet-name">Rainbow</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://rainbow.me/" class="install-link" target="_blank">+</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Solana Wallets -->
+        <div id="solana-content" class="chain-content">
+            <div class="network-info">
+                ◎ <strong>Solana Network:</strong> Connect with your Solana wallet for lightning-fast transactions
+            </div>
+            
+            <div class="wallet-grid">
+                <!-- Phantom -->
+                <div class="wallet-option" data-wallet="phantom" data-chain="solana">
+                    <div class="chain-badge solana-badge">SOL</div>
+                    <div class="wallet-icon">👻</div>
+                    <div class="wallet-name">Phantom</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://phantom.app/" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- Solflare -->
+                <div class="wallet-option" data-wallet="solflare" data-chain="solana">
+                    <div class="chain-badge solana-badge">SOL</div>
+                    <div class="wallet-icon">🔥</div>
+                    <div class="wallet-name">Solflare</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://solflare.com/" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- Backpack -->
+                <div class="wallet-option" data-wallet="backpack" data-chain="solana">
+                    <div class="chain-badge solana-badge">SOL</div>
+                    <div class="wallet-icon">🎒</div>
+                    <div class="wallet-name">Backpack</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://backpack.app/" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- Slope -->
+                <div class="wallet-option" data-wallet="slope" data-chain="solana">
+                    <div class="chain-badge solana-badge">SOL</div>
+                    <div class="wallet-icon">⛰️</div>
+                    <div class="wallet-name">Slope</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://slope.finance/" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- Glow -->
+                <div class="wallet-option" data-wallet="glow" data-chain="solana">
+                    <div class="chain-badge solana-badge">SOL</div>
+                    <div class="wallet-icon">✨</div>
+                    <div class="wallet-name">Glow</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://glow.app/" class="install-link" target="_blank">+</a>
+                </div>
+                
+                <!-- Sollet -->
+                <div class="wallet-option" data-wallet="sollet" data-chain="solana">
+                    <div class="chain-badge solana-badge">SOL</div>
+                    <div class="wallet-icon">🌞</div>
+                    <div class="wallet-name">Sollet</div>
+                    <div class="wallet-status">Checking...</div>
+                    <a href="https://www.sollet.io/" class="install-link" target="_blank">+</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="multi-chain-note">
+            <strong>💡 Pro Tip:</strong> You can use the same account across both chains! Your Recipe Finder profile works with any connected wallet.
+        </div>
+        
+        <div id="wallet-info" class="wallet-info">
+            <div class="connected-wallet">
+                <span id="connected-wallet-icon"></span>
+                <strong id="connected-wallet-name"></strong>
+            </div>
+            <div class="chain-info">
+                <span id="connected-chain-icon"></span>
+                <span id="connected-chain-name"></span>
+            </div>
+            <p><strong>Connected Address:</strong></p>
+            <div id="wallet-address" class="wallet-address"></div>
+        </div>
+        
+        <button id="sign-btn" class="sign-btn">
+            🔑 Sign Message to Login
+        </button>
+        
+        <div id="status-message" class="status-message"></div>
+        
+        <div class="auth-links">
+            <p>Prefer traditional login? <a href="/login-page">Use username & password</a></p>
+            <p>Don't have an account? <a href="/register-page">Create one here</a></p>
+            <p><a href="/">Return to Home</a></p>
+        </div>
+    </div>
+
+    <!-- Include required libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    
+    <script>
+        let web3;
+        let solanaConnection;
+        let userAccount;
+        let currentWallet = null;
+        let currentChain = 'ethereum';
+        let walletConnect = null;
+        
+        const chainTabs = document.querySelectorAll('.chain-tab');
+        const chainContents = document.querySelectorAll('.chain-content');
+        const walletInfo = document.getElementById('wallet-info');
+        const walletAddress = document.getElementById('wallet-address');
+        const statusMessage = document.getElementById('status-message');
+        const signBtn = document.getElementById('sign-btn');
+        const connectedWalletIcon = document.getElementById('connected-wallet-icon');
+        const connectedWalletName = document.getElementById('connected-wallet-name');
+        const connectedChainIcon = document.getElementById('connected-chain-icon');
+        const connectedChainName = document.getElementById('connected-chain-name');
+        
+        // Wallet configurations
+        const wallets = {
+            // Ethereum Wallets
+            metamask: {
+                name: 'MetaMask',
+                icon: '🦊',
+                chain: 'ethereum',
+                check: () => window.ethereum && window.ethereum.isMetaMask,
+                connect: connectMetaMask
+            },
+            okx: {
+                name: 'OKX Wallet',
+                icon: '⭕',
+                chain: 'ethereum',
+                check: () => window.okxwallet || (window.ethereum && window.ethereum.isOkxWallet),
+                connect: connectOKX
+            },
+            coinbase: {
+                name: 'Coinbase Wallet',
+                icon: '🔵',
+                chain: 'ethereum',
+                check: () => window.ethereum && (window.ethereum.isCoinbaseWallet || window.ethereum.selectedProvider?.isCoinbaseWallet),
+                connect: connectCoinbase
+            },
+            walletconnect: {
+                name: 'WalletConnect',
+                icon: '🌉',
+                chain: 'ethereum',
+                check: () => true,
+                connect: connectWalletConnect
+            },
+            trust: {
+                name: 'Trust Wallet',
+                icon: '🛡️',
+                chain: 'ethereum',
+                check: () => window.ethereum && window.ethereum.isTrust,
+                connect: connectTrust
+            },
+            rainbow: {
+                name: 'Rainbow',
+                icon: '🌈',
+                chain: 'ethereum',
+                check: () => window.ethereum && window.ethereum.isRainbow,
+                connect: connectRainbow
+            },
+            
+            // Solana Wallets
+            phantom: {
+                name: 'Phantom',
+                icon: '👻',
+                chain: 'solana',
+                check: () => window.solana && window.solana.isPhantom,
+                connect: connectPhantom
+            },
+            solflare: {
+                name: 'Solflare',
+                icon: '🔥',
+                chain: 'solana',
+                check: () => window.solflare && window.solflare.isSolflare,
+                connect: connectSolflare
+            },
+            backpack: {
+                name: 'Backpack',
+                icon: '🎒',
+                chain: 'solana',
+                check: () => window.backpack,
+                connect: connectBackpack
+            },
+            slope: {
+                name: 'Slope',
+                icon: '⛰️',
+                chain: 'solana',
+                check: () => window.Slope,
+                connect: connectSlope
+            },
+            glow: {
+                name: 'Glow',
+                icon: '✨',
+                chain: 'solana',
+                check: () => window.glow,
+                connect: connectGlow
+            },
+            sollet: {
+                name: 'Sollet',
+                icon: '🌞',
+                chain: 'solana',
+                check: () => window.sollet,
+                connect: connectSollet
+            }
+        };
+        
+        // Initialize
+        window.addEventListener('load', async () => {
+            await checkWalletAvailability();
+            setupChainTabs();
+            setupWalletListeners();
+            
+            // Initialize Solana connection
+            solanaConnection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
+        });
+        
+        function setupChainTabs() {
+            chainTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const chainName = tab.dataset.chain;
+                    switchChain(chainName);
+                });
+            });
+        }
+        
+        function switchChain(chainName) {
+            currentChain = chainName;
+            
+            // Update active tab
+            chainTabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.chain === chainName);
+            });
+            
+            // Update active content
+            chainContents.forEach(content => {
+                content.classList.toggle('active', content.id === `${chainName}-content`);
+            });
+            
+            // Re-check wallet availability for current chain
+            checkWalletAvailability();
+        }
+        
+        async function checkWalletAvailability() {
+            const currentChainWallets = document.querySelectorAll(`.wallet-option[data-chain="${currentChain}"]`);
+            
+            currentChainWallets.forEach(option => {
+                const walletType = option.dataset.wallet;
+                const wallet = wallets[walletType];
+                const statusElement = option.querySelector('.wallet-status');
+                
+                if (wallet && wallet.check()) {
+                    option.classList.remove('unavailable');
+                    option.classList.add('available');
+                    statusElement.textContent = 'Available';
+                    statusElement.classList.remove('unavailable');
+                    statusElement.classList.add('available');
+                } else {
+                    option.classList.remove('available');
+                    option.classList.add('unavailable');
+                    statusElement.textContent = 'Not installed';
+                    statusElement.classList.remove('available');
+                    statusElement.classList.add('unavailable');
+                }
+            });
+        }
+        
+        function setupWalletListeners() {
+            document.addEventListener('click', async (e) => {
+                const walletOption = e.target.closest('.wallet-option');
+                if (!walletOption) return;
+                
+                if (walletOption.classList.contains('unavailable')) {
+                    const installLink = walletOption.querySelector('.install-link');
+                    if (installLink && e.target !== installLink) {
+                        const walletName = walletOption.querySelector('.wallet-name').textContent;
+                        showStatus(`Please install ${walletName} first`, 'error');
+                    }
+                    return;
+                }
+                
+                const walletType = walletOption.dataset.wallet;
+                const wallet = wallets[walletType];
+                
+                if (wallet) {
+                    try {
+                        showStatus('Connecting to wallet...', 'loading');
+                        await wallet.connect();
+                    } catch (error) {
+                        console.error('Wallet connection error:', error);
+                        showStatus('Failed to connect: ' + error.message, 'error');
+                    }
+                }
+            });
+        }
+        
+        // Ethereum Wallet Connections
+        async function connectMetaMask() {
+            if (!window.ethereum || !window.ethereum.isMetaMask) {
+                throw new Error('MetaMask is not installed');
+            }
+            
+            web3 = new Web3(window.ethereum);
+            const accounts = await ethereum.request({method: 'eth_requestAccounts'});
+            userAccount = accounts[0];
+            currentWallet = 'metamask';
+            
+            showWalletConnected('MetaMask', '🦊', 'ethereum', '⟠');
+        }
+        
+        async function connectOKX() {
+            const provider = window.okxwallet || window.ethereum;
+            if (!provider) {
+                throw new Error('OKX Wallet is not installed');
+            }
+            
+            web3 = new Web3(provider);
+            const accounts = await provider.request({method: 'eth_requestAccounts'});
+            userAccount = accounts[0];
+            currentWallet = 'okx';
+            
+            showWalletConnected('OKX Wallet', '⭕', 'ethereum', '⟠');
+        }
+        
+        async function connectCoinbase() {
+            if (!window.ethereum || !window.ethereum.isCoinbaseWallet) {
+                throw new Error('Coinbase Wallet is not installed');
+            }
+            
+            web3 = new Web3(window.ethereum);
+            const accounts = await ethereum.request({method: 'eth_requestAccounts'});
+            userAccount = accounts[0];
+            currentWallet = 'coinbase';
+            
+            showWalletConnected('Coinbase Wallet', '🔵', 'ethereum', '⟠');
+        }
+        
+        async function connectWalletConnect() {
+            try {
+                const provider = new WalletConnectProvider.default({
+                    infuraId: "your-infura-id",
+                    rpc: {
+                        1: "https://mainnet.infura.io/v3/your-infura-id",
+                        137: "https://polygon-rpc.com/"
+                    }
+                });
+                
+                await provider.enable();
+                web3 = new Web3(provider);
+                const accounts = await web3.eth.getAccounts();
+                userAccount = accounts[0];
+                currentWallet = 'walletconnect';
+                walletConnect = provider;
+                
+                showWalletConnected('WalletConnect', '🌉', 'ethereum', '⟠');
+                
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        async function connectTrust() {
+            if (!window.ethereum || !window.ethereum.isTrust) {
+                throw new Error('Trust Wallet is not installed');
+            }
+            
+            web3 = new Web3(window.ethereum);
+            const accounts = await ethereum.request({method: 'eth_requestAccounts'});
+            userAccount = accounts[0];
+            currentWallet = 'trust';
+            
+            showWalletConnected('Trust Wallet', '🛡️', 'ethereum', '⟠');
+        }
+        
+        async function connectRainbow() {
+            if (!window.ethereum || !window.ethereum.isRainbow) {
+                throw new Error('Rainbow Wallet is not installed');
+            }
+            
+            web3 = new Web3(window.ethereum);
+            const accounts = await ethereum.request({method: 'eth_requestAccounts'});
+            userAccount = accounts[0];
+            currentWallet = 'rainbow';
+            
+            showWalletConnected('Rainbow', '🌈', 'ethereum', '⟠');
+        }
+        
+        // Solana Wallet Connections
+        async function connectPhantom() {
+            if (!window.solana || !window.solana.isPhantom) {
+                throw new Error('Phantom is not installed');
+            }
+            
+            const response = await window.solana.connect();
+            userAccount = response.publicKey.toString();
+            currentWallet = 'phantom';
+            
+            showWalletConnected('Phantom', '👻', 'solana', '◎');
+        }
+        
+        async function connectSolflare() {
+            if (!window.solflare || !window.solflare.isSolflare) {
+                throw new Error('Solflare is not installed');
+            }
+            
+            const response = await window.solflare.connect();
+            userAccount = response.publicKey.toString();
+            currentWallet = 'solflare';
+            
+            showWalletConnected('Solflare', '🔥', 'solana', '◎');
+        }
+        
+        async function connectBackpack() {
+            if (!window.backpack) {
+                throw new Error('Backpack is not installed');
+            }
+            
+            const response = await window.backpack.connect();
+            userAccount = response.publicKey.toString();
+            currentWallet = 'backpack';
+            
+            showWalletConnected('Backpack', '🎒', 'solana', '◎');
+        }
+        
+        async function connectSlope() {
+            if (!window.Slope) {
+                throw new Error('Slope is not installed');
+            }
+            
+            const response = await new window.Slope().connect();
+            userAccount = response.data.publicKey;
+            currentWallet = 'slope';
+            
+            showWalletConnected('Slope', '⛰️', 'solana', '◎');
+        }
+        
+        async function connectGlow() {
+            if (!window.glow) {
+                throw new Error('Glow is not installed');
+            }
+            
+            const response = await window.glow.connect();
+            userAccount = response.publicKey.toString();
+            currentWallet = 'glow';
+            
+            showWalletConnected('Glow', '✨', 'solana', '◎');
+        }
+        
+        async function connectSollet() {
+            if (!window.sollet) {
+                throw new Error('Sollet is not installed');
+            }
+            
+            const response = await window.sollet.connect();
+            userAccount = response.publicKey.toString();
+            currentWallet = 'sollet';
+            
+            showWalletConnected('Sollet', '🌞', 'solana', '◎');
+        }
+        
+        function showWalletConnected(walletName, walletIcon, chain, chainIcon) {
+            connectedWalletName.textContent = walletName;
+            connectedWalletIcon.textContent = walletIcon;
+            connectedChainName.textContent = chain.charAt(0).toUpperCase() + chain.slice(1);
+            connectedChainIcon.textContent = chainIcon;
+            walletAddress.textContent = userAccount;
+            walletInfo.style.display = 'block';
+            signBtn.style.display = 'block';
+            showStatus(`Connected to ${walletName} on ${chain}!`, 'success');
+        }
+        
+        // Sign message for authentication
+        signBtn.addEventListener('click', async () => {
+            if (!userAccount) {
+                showStatus('Please connect your wallet first', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('Preparing authentication message...', 'loading');
+                
+                // Get nonce from server
+                const authResponse = await fetch('/web3-auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        wallet_address: userAccount,
+                        wallet_type: currentWallet,
+                        chain: currentChain
+                    })
+                });
+                
+                const authData = await authResponse.json();
+                
+                if (!authData.success) {
+                    throw new Error(authData.message);
+                }
+                
+                showStatus(`Please sign the message in your ${wallets[currentWallet].name}...`, 'loading');
+                
+                let signature;
+                
+                // Handle different signing methods based on chain
+                if (currentChain === 'ethereum') {
+                    if (currentWallet === 'walletconnect' && walletConnect) {
+                        signature = await walletConnect.request({
+                            method: 'personal_sign',
+                            params: [authData.message, userAccount]
+                        });
+                    } else if (web3 && web3.eth) {
+                        signature = await web3.eth.personal.sign(authData.message, userAccount);
+                    } else {
+                        signature = await ethereum.request({
+                            method: 'personal_sign',
+                            params: [authData.message, userAccount]
+                        });
+                    }
+                } else if (currentChain === 'solana') {
+                    const message = new TextEncoder().encode(authData.message);
+                    
+                    if (currentWallet === 'phantom' && window.solana) {
+                        const signedMessage = await window.solana.signMessage(message, 'utf8');
+                        signature = signedMessage.signature;
+                    } else if (currentWallet === 'solflare' && window.solflare) {
+                        const signedMessage = await window.solflare.signMessage(message, 'utf8');
+                        signature = signedMessage.signature;
+                    } else if (currentWallet === 'backpack' && window.backpack) {
+                        const signedMessage = await window.backpack.signMessage(message);
+                        signature = signedMessage.signature;
+                    } else {
+                        throw new Error('Wallet signing not supported for this Solana wallet');
+                    }
+                }
+                
+                showStatus('Verifying signature...', 'loading');
+                
+                // Verify signature with server
+                const verifyResponse = await fetch('/web3-verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        wallet_address: userAccount,
+                        signature: signature,
+                        chain: currentChain
+                    })
+                });
+                
+                const verifyData = await verifyResponse.json();
+                
+                if (verifyData.success) {
+                    showStatus('Authentication successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = verifyData.redirect;
+                    }, 1500);
+                } else {
+                    throw new Error(verifyData.message);
+                }
+                
+            } catch (error) {
+                console.error('Error during authentication:', error);
+                showStatus('Authentication failed: ' + error.message, 'error');
+            }
+        });
+        
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message status-${type}`;
+            statusMessage.style.display = 'block';
+        }
+        
+        // Handle account changes for Ethereum
+        if (typeof window.ethereum !== 'undefined') {
+            ethereum.on('accountsChanged', function (accounts) {
+                if (accounts.length > 0 && currentChain === 'ethereum') {
+                    userAccount = accounts[0];
+                    walletAddress.textContent = userAccount;
+                    showStatus('Account changed to: ' + userAccount, 'success');
+                } else if (accounts.length === 0) {
+                    location.reload();
+                }
+            });
+        }
+        
+        // Handle account changes for Solana
+        if (typeof window.solana !== 'undefined') {
+            window.solana.on('accountChanged', (publicKey) => {
+                if (publicKey && currentChain === 'solana') {
+                    userAccount = publicKey.toString();
+                    walletAddress.textContent = userAccount;
+                    showStatus('Account changed to: ' + userAccount, 'success');
+                } else {
+                    location.reload();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
