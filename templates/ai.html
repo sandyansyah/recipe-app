@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOD of FOOD - AI Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ai-styles.css') }}">
     <style>
+        /* Inline critical CSS for faster loading */
         :root {
             --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-solid: #667eea;
@@ -15,27 +17,12 @@
             --accent-solid: #4facfe;
             --success: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             --success-solid: #43e97b;
-            --warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --dark: #1a1a2e;
-            --dark-secondary: #16213e;
-            --dark-tertiary: #0f3460;
             --light: #ffffff;
-            --light-secondary: #f8fafc;
-            --light-tertiary: #e2e8f0;
-            --text-primary: #2d3748;
-            --text-secondary: #718096;
-            --text-light: #a0aec0;
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
             --border-radius: 20px;
             --border-radius-sm: 12px;
-            --border-radius-lg: 24px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -48,11 +35,10 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
-            color: var(--text-primary);
+            color: #2d3748;
             overflow-x: hidden;
         }
 
-        /* Animated Background */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -80,547 +66,174 @@
             100% { transform: translate(-50px, -50px) rotate(360deg); }
         }
 
-        /* Mobile-first responsive container */
+        .auth-bar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom-left-radius: var(--border-radius);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom-right-radius: var(--border-radius);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .auth-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--light);
+            background: transparent;
+            color: var(--light);
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+            display: inline-block;
+        }
+        
+        .auth-btn:hover {
+            background: var(--light);
+            color: var(--primary-solid);
+            transform: translateY(-2px);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--light);
+        }
+        
+        .user-name {
+            font-weight: bold;
+            color: var(--light);
+            background: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .logout-btn {
+            padding: 0.4rem 1rem;
+            background: var(--secondary);
+            color: var(--light);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
         .app-container {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             position: relative;
+            margin-top: 80px;
         }
 
-        /* Header for mobile */
-        .mobile-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .mobile-header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: var(--primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--light);
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-
-        .menu-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100vh;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--glass-border);
-            z-index: 200;
-            transition: var(--transition);
-            overflow-y: auto;
-        }
-
-        .sidebar.open {
-            left: 0;
-        }
-
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .sidebar-header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: var(--primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-header p {
-            color: var(--light);
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .nav-menu {
-            padding: 1.5rem 0;
-        }
-
-        .nav-item {
-            margin: 0.5rem 1rem;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            color: var(--light);
-            text-decoration: none;
-            border-radius: var(--border-radius-sm);
-            transition: var(--transition-fast);
-            font-weight: 500;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            transform: translateX(5px);
-        }
-
-        .nav-link.active {
-            background: var(--accent);
-            color: var(--light);
-        }
-
-        /* Main content */
-        .main-content {
-            flex: 1;
+        .login-required {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            padding: 1rem;
-            transition: var(--transition);
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+            text-align: center;
+            padding: 2rem;
         }
 
-        /* Chat container */
-        .chat-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            height: calc(100vh - 200px);
-        }
-
-        /* Chat messages */
-        .chat-messages {
+        .login-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            overflow-y: auto;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
             animation: slideInUp 0.6s ease-out;
         }
 
-        .message {
-            display: flex;
-            gap: 1rem;
-            animation: fadeInScale 0.5s ease-out;
+        .login-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 2s infinite;
         }
 
-        .message.user {
-            flex-direction: row-reverse;
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
 
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
+        .login-title {
             color: var(--light);
-            flex-shrink: 0;
-        }
-
-        .message.ai .message-avatar {
-            background: var(--accent);
-        }
-
-        .message.user .message-avatar {
-            background: var(--secondary);
-        }
-
-        .message-content {
-            background: var(--light);
-            padding: 1rem 1.5rem;
-            border-radius: var(--border-radius-sm);
-            box-shadow: var(--shadow-sm);
-            max-width: 80%;
-            word-wrap: break-word;
-            position: relative;
-            animation: messageSlide 0.4s ease-out;
-        }
-
-        .message.user .message-content {
-            background: var(--primary);
-            color: var(--light);
-        }
-
-        .message-content::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            width: 0;
-            height: 0;
-            border: 8px solid transparent;
-        }
-
-        .message.ai .message-content::before {
-            left: -16px;
-            border-right-color: var(--light);
-        }
-
-        .message.user .message-content::before {
-            right: -16px;
-            border-left-color: var(--primary-solid);
-        }
-
-        /* Input area */
-        .input-area {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-top: auto;
-            animation: slideInUp 0.6s ease-out 0.2s both;
-        }
-
-        .input-container {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-end;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .selected-ingredients {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .ingredient-tag {
-            background: var(--success);
-            color: var(--light);
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            animation: popIn 0.3s ease-out;
-        }
-
-        .remove-ingredient {
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0;
-            transition: var(--transition-fast);
-        }
-
-        .remove-ingredient:hover {
-            transform: scale(1.2);
-        }
-
-        .input-field {
-            display: flex;
-            background: var(--light);
-            border-radius: 25px;
-            padding: 0.75rem 1.5rem;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition-fast);
-        }
-
-        .input-field:focus-within {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
-        }
-
-        .input-field input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            background: transparent;
-        }
-
-        .send-button {
-            background: var(--accent);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            color: var(--light);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-fast);
-            box-shadow: var(--shadow-md);
-        }
-
-        .send-button:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .send-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Ingredients panel */
-        .ingredients-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            max-height: 300px;
-            overflow-y: auto;
-            animation: slideInRight 0.6s ease-out 0.1s both;
-        }
-
-        .ingredients-panel h3 {
-            color: var(--light);
+            font-size: 2rem;
+            font-weight: 700;
             margin-bottom: 1rem;
-            font-weight: 600;
         }
 
-        .ingredients-search {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius-sm);
-            background: var(--glass-bg);
+        .login-message {
             color: var(--light);
-            margin-bottom: 1rem;
-            outline: none;
-            transition: var(--transition-fast);
-        }
-
-        .ingredients-search:focus {
-            border-color: var(--accent-solid);
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
-        }
-
-        .ingredients-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .ingredient-item {
-            padding: 0.75rem;
-            background: var(--glass-bg);
-            border-radius: var(--border-radius-sm);
-            color: var(--light);
-            cursor: pointer;
-            transition: var(--transition-fast);
-            border: 1px solid transparent;
-        }
-
-        .ingredient-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-
-        .ingredient-item.selected {
-            background: var(--success);
-            border-color: var(--success-solid);
-        }
-
-        /* Recommendations */
-        .recommendations {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            animation: slideInLeft 0.6s ease-out 0.3s both;
-        }
-
-        .recommendations h3 {
-            color: var(--light);
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .recommendation-card {
-            background: var(--light);
-            border-radius: var(--border-radius-sm);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            box-shadow: var(--shadow-sm);
-            animation: slideInUp 0.4s ease-out;
-        }
-
-        .recommendation-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .recommendation-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .recommendation-title {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .match-score {
-            background: var(--accent);
-            color: var(--light);
-            padding: 0.25rem 0.75rem;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .recommendation-ingredients {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            background: var(--light);
-            border-radius: var(--border-radius);
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: scale(0.8);
-            transition: var(--transition);
-        }
-
-        .modal-overlay.active .modal {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            background: var(--primary);
-            color: var(--light);
-            padding: 1.5rem;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            font-weight: 600;
-        }
-
-        .close-button {
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: var(--transition-fast);
-        }
-
-        .close-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .modal-content {
-            padding: 1.5rem;
-        }
-
-        .modal-section {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            line-height: 1.6;
             margin-bottom: 2rem;
         }
 
-        .modal-section h3 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-weight: 600;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--light-tertiary);
-        }
-
-        .ingredients-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 0.75rem;
-        }
-
-        .ingredient-card {
-            background: var(--light-secondary);
-            padding: 0.75rem;
-            border-radius: var(--border-radius-sm);
+        .login-actions {
             display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            transition: var(--transition-fast);
         }
 
-        .ingredient-card.available {
-            background: rgba(67, 233, 123, 0.1);
-            border-left: 3px solid var(--success-solid);
+        .cta-btn.primary {
+            background: var(--accent);
+            color: var(--light);
         }
 
-        /* Animations */
+        .cta-btn.secondary {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid var(--light);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
         @keyframes slideInUp {
             from {
                 opacity: 0;
@@ -629,17 +242,6 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
             }
         }
 
@@ -654,176 +256,570 @@
             }
         }
 
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        /* Mobile Combined Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.5rem 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        .mobile-nav-tabs {
+            display: flex;
+            gap: 0.25rem;
         }
 
-        @keyframes messageSlide {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .mobile-nav-tab {
+            padding: 0.3rem 0.6rem;
+            background: transparent;
+            color: var(--light);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            white-space: nowrap;
+        }
+
+        .mobile-nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            text-decoration: none;
+        }
+
+        .mobile-nav-tab.active {
+            background: var(--accent);
+            color: var(--light);
+            border-color: var(--accent-solid);
+        }
+
+        .mobile-nav-tab-icon {
+            font-size: 0.8rem;
+        }
+
+        .mobile-nav-tab-text {
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .mobile-auth-buttons {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+
+        .mobile-auth-btn {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--light);
+            background: transparent;
+            color: var(--light);
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.7rem;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .mobile-auth-btn:hover {
+            background: var(--light);
+            color: var(--primary-solid);
+        }
+
+        .mobile-user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--light);
+            font-size: 0.75rem;
+        }
+
+        .mobile-user-name {
+            font-weight: bold;
+            color: var(--light);
+            background: var(--accent);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+        }
+
+        .mobile-logout-btn {
+            padding: 0.2rem 0.6rem;
+            background: var(--secondary);
+            color: var(--light);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.65rem;
+            transition: var(--transition);
+            text-decoration: none;
         }
 
         /* Responsive Design */
-        @media (min-width: 768px) {
-            .mobile-header {
+        @media (max-width: 768px) {
+            /* Hide desktop navigation */
+            .nav-bar,
+            .auth-bar {
                 display: none;
             }
 
-            .sidebar {
-                position: relative;
-                left: 0;
-                width: 280px;
-                border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            /* Show mobile navigation */
+            .mobile-nav {
+                display: flex;
             }
 
             .app-container {
-                flex-direction: row;
+                margin-top: 60px;
+                display: flex;
+                flex-direction: column;
             }
 
-            .main-content {
+            .ai-interface {
+                order: 1;
+                padding: 0.5rem;
+            }
+
+            .ai-interface.active {
+                height: calc(100vh - 70px);
+            }
+
+            .login-required {
+                padding: 1rem;
+                min-height: calc(100vh - 60px);
+            }
+
+            .login-card {
                 padding: 2rem;
             }
 
-            .chat-container {
-                grid-template-columns: 1fr 300px;
-                height: calc(100vh - 240px);
+            .login-actions {
+                flex-direction: column;
+                align-items: center;
             }
 
-            .input-area {
-                margin-top: 0;
+            .cta-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
-        @media (min-width: 1024px) {
+        @media (max-width: 480px) {
+            .mobile-nav {
+                padding: 0.4rem 0.8rem;
+            }
+
+            .mobile-nav-tab {
+                padding: 0.25rem 0.4rem;
+                font-size: 0.65rem;
+                gap: 0.2rem;
+            }
+
+            .mobile-nav-tab-icon {
+                font-size: 0.7rem;
+            }
+
+            .mobile-nav-tab-text {
+                font-size: 0.6rem;
+            }
+
+            .mobile-auth-btn {
+                padding: 0.25rem 0.6rem;
+                font-size: 0.65rem;
+            }
+
+            .mobile-user-name {
+                padding: 0.15rem 0.4rem;
+                font-size: 0.65rem;
+            }
+
+            .mobile-logout-btn {
+                padding: 0.15rem 0.4rem;
+                font-size: 0.6rem;
+            }
+
+            .ai-interface {
+                padding: 0.25rem;
+            }
+
+            .ai-interface.active {
+                height: calc(100vh - 55px);
+            }
+
+            .login-card {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+
+            .login-title {
+                font-size: 1.5rem;
+            }
+
+            .login-message {
+                font-size: 1rem;
+            }
+
+            .app-container {
+                margin-top: 50px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .mobile-nav-tabs {
+                gap: 0.15rem;
+            }
+
+            .mobile-nav-tab-text {
+                display: none;
+            }
+
+            .mobile-nav-tab {
+                padding: 0.3rem;
+                border-radius: 6px;
+            }
+
+            .mobile-auth-buttons {
+                gap: 0.2rem;
+            }
+
+            .mobile-auth-btn {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.6rem;
+            }
+
+            .mobile-user-info {
+                gap: 0.3rem;
+            }
+
+            .ai-interface {
+                padding: 0.15rem;
+            }
+
+            .login-card {
+                padding: 1rem;
+                margin: 0.25rem;
+            }
+        }
+
+        /* Hidden elements that will be shown via JavaScript */
+        .ai-interface {
+            display: none;
+        }
+
+        .ai-interface.active {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 160px);
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .chat-messages {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            animation: slideInUp 0.6s ease-out 0.2s both;
+        }
+
+        /* Ingredients Panel Animation */
+        .ingredients-panel {
+            animation: slideInRight 0.6s ease-out 0.1s both;
+        }
+
+        /* Recommendations Animation */
+        .recommendations {
+            animation: slideInRight 0.6s ease-out 0.3s both;
+        }
+
+        /* Navigation Container */
+        .nav-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Navigation Tabs - Now in top bar */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            color: var(--light);
+            text-decoration: none;
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-tab:hover::before {
+            left: 100%;
+        }
+
+        .nav-tab.active {
+            background: var(--accent);
+            color: var(--light);
+            border-color: var(--accent-solid);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .nav-tab.active::before {
+            display: none;
+        }
+
+        .nav-tab-icon {
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .nav-tab:hover .nav-tab-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-tab.active .nav-tab-icon {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .nav-tab-text {
+            font-weight: 600;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.5rem 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        /* Message animations */
+        .message {
+            transition: all 0.3s ease-out;
+        }
+
+        /* Input form loading state */
+        .input-form.loading .send-button {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-form.loading .send-button:hover {
+            transform: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (min-width: 769px) {
             .chat-container {
                 grid-template-columns: 300px 1fr 300px;
                 gap: 2rem;
             }
+        }
 
-            .main-content {
-                padding: 2rem 3rem;
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
             }
-        }
-
-        /* Loading animation */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem;
-        }
-
-        .loading-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent-solid);
-            animation: loadingDots 1.4s infinite ease-in-out;
-        }
-
-        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
-        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes loadingDots {
-            0%, 80%, 100% {
-                transform: scale(0);
-                opacity: 0.5;
+            
+            .chat-messages {
+                order: 1;
+                padding: 1rem;
             }
-            40% {
-                transform: scale(1);
-                opacity: 1;
+            
+            .recommendations {
+                order: 2;
             }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+            
+            .ingredients-panel {
+                max-height: 250px;
+                order: 3;
+            }
         }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
     
-    <div class="app-container">
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-            <h1>GOD of FOOD</h1>
-            <button class="menu-toggle" id="menuToggle">☰</button>
+    <!-- Mobile Navigation (visible on mobile only) -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-tabs">
+            <a href="/" class="mobile-nav-tab">
+                <span class="mobile-nav-tab-icon">🏠</span>
+                <span class="mobile-nav-tab-text">Home</span>
+            </a>
+            <a href="/diskusi" class="mobile-nav-tab">
+                <span class="mobile-nav-tab-icon">💬</span>
+                <span class="mobile-nav-tab-text">Diskusi</span>
+            </a>
+            <a href="/ai" class="mobile-nav-tab active">
+                <span class="mobile-nav-tab-icon">🤖</span>
+                <span class="mobile-nav-tab-text">AI</span>
+            </a>
         </div>
-
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h1>GOD of FOOD</h1>
-                <p>AI Recipe Assistant</p>
+        
+        <div class="mobile-auth-section">
+            {% if current_user %}
+            <div class="mobile-user-info">
+                <span class="mobile-user-name">{{ current_user.username }}</span>
+                <a href="/logout" class="mobile-logout-btn">Logout</a>
             </div>
-            <nav class="nav-menu">
-                <div class="nav-item">
-                    <a href="#" class="nav-link">🏠 Beranda</a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link">📚 Resep</a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link active">🤖 AI Assistant</a>
-                </div>
-            </nav>
+            {% else %}
+            <div class="mobile-auth-buttons">
+                <a href="/login-page" class="mobile-auth-btn">Login</a>
+                <a href="/register-page" class="mobile-auth-btn">Register</a>
+            </div>
+            {% endif %}
         </div>
+    </div>
+    
+    <!-- Desktop Navigation Bar -->
+    <div class="nav-bar">
+        <div class="nav-tabs">
+            <a href="/" class="nav-tab">
+                <span class="nav-tab-icon">🏠</span>
+                <span class="nav-tab-text">Home</span>
+            </a>
+            <a href="/diskusi" class="nav-tab">
+                <span class="nav-tab-icon">💬</span>
+                <span class="nav-tab-text">Diskusi</span>
+            </a>
+            <a href="/ai" class="nav-tab active">
+                <span class="nav-tab-icon">🤖</span>
+                <span class="nav-tab-text">AI Assistant</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Desktop Authentication Bar -->
+    <div class="auth-bar">
+        <!-- Jinja2 conditional rendering -->
+        {% if current_user %}
+        <div class="user-info">
+            <span>Halo, <span class="user-name">{{ current_user.username }}</span></span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+        {% else %}
+        <div class="auth-buttons">
+            <a href="/login-page" class="auth-btn login">Login</a>
+            <a href="/register-page" class="auth-btn register">Register</a>
+        </div>
+        {% endif %}
+    </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
+    <!-- Conditional content based on authentication -->
+    {% if current_user %}
+    <!-- Main App for Authenticated Users -->
+    <div class="app-container">
+        <div class="ai-interface active">
+            <!-- Error message display -->
+            {% if error_message %}
+            <div class="error-alert">
+                <strong>⚠️ Error:</strong> {{ error_message }}
+            </div>
+            {% endif %}
+
             <div class="chat-container">
-                <!-- Ingredients Panel (Desktop) -->
-                <div class="ingredients-panel">
+                <!-- Ingredients Panel -->
+                <div class="ingredients-panel" id="ingredientsPanel">
                     <h3>📦 Available Ingredients</h3>
                     <input type="text" class="ingredients-search" placeholder="Search ingredients..." id="ingredientSearch">
                     <div class="ingredients-list" id="ingredientsList">
-                        <div class="ingredient-item" data-ingredient="Rice">🍚 Rice</div>
-                        <div class="ingredient-item" data-ingredient="Chicken">🐔 Chicken</div>
-                        <div class="ingredient-item" data-ingredient="Eggs">🥚 Eggs</div>
-                        <div class="ingredient-item" data-ingredient="Tomatoes">🍅 Tomatoes</div>
-                        <div class="ingredient-item" data-ingredient="Onions">🧅 Onions</div>
-                        <div class="ingredient-item" data-ingredient="Garlic">🧄 Garlic</div>
-                        <div class="ingredient-item" data-ingredient="Potatoes">🥔 Potatoes</div>
-                        <div class="ingredient-item" data-ingredient="Carrots">🥕 Carrots</div>
+                        <!-- Server-side rendered ingredients -->
+                        {% if all_ingredients %}
+                            {% for ingredient in all_ingredients[:8] %}
+                            <div class="ingredient-item" data-ingredient="{{ ingredient }}">🥘 {{ ingredient }}</div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="ingredient-item" data-ingredient="Rice">🍚 Rice</div>
+                            <div class="ingredient-item" data-ingredient="Chicken">🐔 Chicken</div>
+                            <div class="ingredient-item" data-ingredient="Eggs">🥚 Eggs</div>
+                            <div class="ingredient-item" data-ingredient="Tomatoes">🍅 Tomatoes</div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -832,52 +828,116 @@
                     <div class="message ai">
                         <div class="message-avatar">🤖</div>
                         <div class="message-content">
-                            <p>Hello! I'm your AI Recipe Assistant. 👨‍🍳</p>
-                            <p>Tell me what ingredients you have, and I'll recommend delicious recipes you can make!</p>
-                            <p>Try saying "I have rice, chicken, and vegetables" or select ingredients from the panel.</p>
+                            <p>Halo <strong>{{ current_user.username }}</strong>! Saya adalah AI Recipe Assistant Anda. 👨‍🍳</p>
+                            <p>Ceritakan bahan-bahan apa yang Anda miliki, dan saya akan merekomendasikan resep lezat yang bisa Anda buat!</p>
                         </div>
                     </div>
+                    
+                    <!-- Display extracted ingredients if any -->
+                    {% if extracted_ingredients %}
+                    <div class="message ai">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            <p><strong>Bahan yang terdeteksi:</strong> {{ extracted_ingredients | join(', ') }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Display user input if any -->
+                    {% if user_input %}
+                    <div class="message user">
+                        <div class="message-avatar">👤</div>
+                        <div class="message-content">
+                            <p>{{ user_input }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
-                <!-- Recommendations -->
+                <!-- Recommendations Panel -->
                 <div class="recommendations" id="recommendations">
                     <h3>🌟 Recipe Recommendations</h3>
                     <div id="recommendationsList">
-                        <p style="color: var(--light); opacity: 0.7; text-align: center; padding: 2rem;">
-                            Select ingredients to get personalized recipe recommendations!
+                        {% if recommendations %}
+                            {% for recipe in recommendations %}
+                            <div class="recommendation-card" data-recipe-index="{{ loop.index0 }}">
+                                <div class="recommendation-header">
+                                    <div class="recommendation-title">{{ recipe.name }}</div>
+                                    <div class="match-score">{{ "%.0f"|format(recipe.similarity_score * 100) }}% match</div>
+                                </div>
+                                <div class="recommendation-ingredients">
+                                    {{ recipe.ingredients[:3] | join(', ') }}{% if recipe.ingredients|length > 3 %}...{% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <p class="no-recommendations">
+                            Pilih bahan-bahan untuk mendapatkan rekomendasi resep yang dipersonalisasi!
                         </p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
             <!-- Input Area -->
             <div class="input-area">
-                <div class="input-container">
-                    <div class="input-wrapper">
-                        <div class="selected-ingredients" id="selectedIngredients">
-                            <!-- Selected ingredients will appear here -->
-                        </div>
-                        <form class="input-field" id="chatForm">
-                            <input type="text" placeholder="Tell me what ingredients you have..." id="userInput">
-                            <button type="submit" class="send-button">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                                    <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
-                                </svg>
-                            </button>
-                        </form>
+                <div class="input-form" id="inputForm">
+                    <div class="selected-ingredients" id="selectedIngredients">
+                        <!-- Selected ingredients will appear here via JavaScript -->
+                    </div>
+                    <div class="input-field">
+                        <input type="text" name="query" placeholder="Ceritakan bahan apa yang Anda miliki..." id="userInput" value="{{ user_input if user_input else '' }}">
+                        <button type="button" class="send-button" id="sendButton">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    {% else %}
+    <!-- Login Required Screen for Non-Authenticated Users -->
+    <div class="login-required">
+        <div class="login-card">
+            <div class="login-icon">🔐</div>
+            <h1 class="login-title">Akses Terbatas</h1>
+            <p class="login-message">
+                Maaf, Anda harus login terlebih dahulu untuk menggunakan AI Recipe Assistant. 
+                Daftar sekarang dan nikmati fitur personalisasi resep berdasarkan bahan yang Anda miliki!
+            </p>
+            <div class="login-actions">
+                <a href="/login-page" class="cta-btn primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10,17 15,12 10,7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                    Login Sekarang
+                </a>
+                <a href="/register-page" class="cta-btn secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    Daftar Akun Baru
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Recipe Modal -->
-    <div class="modal-overlay" id="recipeModal">
+    <div class="modal-overlay" id="recipeModal" style="display: none;">
         <div class="modal">
             <div class="modal-header">
                 <h2 id="modalTitle">Recipe Details</h2>
-                <button class="close-button" id="closeModal">×</button>
+                <button class="close-button" id="closeModal" type="button">×</button>
             </div>
             <div class="modal-content" id="modalContent">
                 <!-- Recipe details will be populated here -->
@@ -885,365 +945,404 @@
         </div>
     </div>
 
-    <script>
-        class AIAssistant {
-            constructor() {
-                this.selectedIngredients = new Set();
-                this.recipes = [
-                    {
-                        name: "Fried Rice",
-                        ingredients: ["Rice", "Eggs", "Onions", "Garlic"],
-                        instructions: "Heat oil in a pan. Add garlic and onions, cook until fragrant. Add rice and eggs, stir-fry until well combined. Season with soy sauce and serve hot.",
-                        difficulty: "Easy",
-                        time: "15 minutes"
-                    },
-                    {
-                        name: "Chicken Curry",
-                        ingredients: ["Chicken", "Onions", "Garlic", "Tomatoes"],
-                        instructions: "Heat oil in a pot. Add onions and garlic, cook until soft. Add chicken pieces and cook until browned. Add tomatoes and spices, simmer for 20 minutes.",
-                        difficulty: "Medium",
-                        time: "30 minutes"
-                    },
-                    {
-                        name: "Vegetable Soup",
-                        ingredients: ["Carrots", "Potatoes", "Onions", "Garlic"],
-                        instructions: "Heat oil in a large pot. Add onions and garlic, cook until fragrant. Add chopped vegetables and water. Simmer for 25 minutes until vegetables are tender.",
-                        difficulty: "Easy",
-                        time: "35 minutes"
-                    }
-                ];
-                this.init();
-            }
-
-            init() {
-                this.bindEvents();
-                this.renderIngredients();
-            }
-
-            bindEvents() {
-                // Menu toggle
-                document.getElementById('menuToggle').addEventListener('click', () => {
-                    document.getElementById('sidebar').classList.toggle('open');
-                });
-
-                // Close sidebar when clicking outside on mobile
-                document.addEventListener('click', (e) => {
-                    const sidebar = document.getElementById('sidebar');
-                    const menuToggle = document.getElementById('menuToggle');
-                    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                        sidebar.classList.remove('open');
-                    }
-                });
-
-                // Ingredient search
-                document.getElementById('ingredientSearch').addEventListener('input', (e) => {
-                    this.filterIngredients(e.target.value);
-                });
-
-                // Chat form
-                document.getElementById('chatForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleUserMessage();
-                });
-
-                // Modal close
-                document.getElementById('closeModal').addEventListener('click', () => {
-                    document.getElementById('recipeModal').classList.remove('active');
-                });
-
-                document.getElementById('recipeModal').addEventListener('click', (e) => {
-                    if (e.target.id === 'recipeModal') {
-                        document.getElementById('recipeModal').classList.remove('active');
-                    }
-                });
-            }
-
-            filterIngredients(query) {
-                const ingredients = document.querySelectorAll('.ingredient-item');
-                ingredients.forEach(item => {
-                    const text = item.textContent.toLowerCase();
-                    if (text.includes(query.toLowerCase())) {
-                        item.style.display = 'block';
-                        item.style.animation = 'fadeInScale 0.3s ease-out';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            }
-
-            renderIngredients() {
-                const container = document.getElementById('ingredientsList');
-                const ingredients = ['Rice', 'Chicken', 'Eggs', 'Tomatoes', 'Onions', 'Garlic', 'Potatoes', 'Carrots', 'Beef', 'Pork', 'Fish', 'Shrimp', 'Mushrooms', 'Bell Peppers', 'Broccoli', 'Spinach', 'Lettuce', 'Cucumber', 'Cheese', 'Milk', 'Butter', 'Oil', 'Salt', 'Pepper', 'Soy Sauce'];
-                const emojis = ['🍚', '🐔', '🥚', '🍅', '🧅', '🧄', '🥔', '🥕', '🥩', '🥓', '🐟', '🦐', '🍄', '🫑', '🥦', '🥬', '🥬', '🥒', '🧀', '🥛', '🧈', '🛢️', '🧂', '🌶️', '🥢'];
-                
-                container.innerHTML = '';
-                ingredients.forEach((ingredient, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'ingredient-item';
-                    div.dataset.ingredient = ingredient;
-                    div.innerHTML = `${emojis[index] || '🥘'} ${ingredient}`;
-                    div.addEventListener('click', () => this.toggleIngredient(ingredient, div));
-                    container.appendChild(div);
-                });
-            }
-
-            toggleIngredient(ingredient, element) {
-                if (this.selectedIngredients.has(ingredient)) {
-                    this.selectedIngredients.delete(ingredient);
-                    element.classList.remove('selected');
-                    this.removeIngredientTag(ingredient);
-                } else {
-                    this.selectedIngredients.add(ingredient);
-                    element.classList.add('selected');
-                    this.addIngredientTag(ingredient);
-                }
-                this.updateInputText();
-                this.getRecommendations();
-            }
-
-            addIngredientTag(ingredient) {
-                const container = document.getElementById('selectedIngredients');
-                const tag = document.createElement('div');
-                tag.className = 'ingredient-tag';
-                tag.dataset.ingredient = ingredient;
-                tag.innerHTML = `
-                    <span>${ingredient}</span>
-                    <button class="remove-ingredient" type="button">×</button>
-                `;
-                
-                tag.querySelector('.remove-ingredient').addEventListener('click', () => {
-                    this.toggleIngredient(ingredient, document.querySelector(`[data-ingredient="${ingredient}"]`));
-                });
-                
-                container.appendChild(tag);
-            }
-
-            removeIngredientTag(ingredient) {
-                const tag = document.querySelector(`#selectedIngredients [data-ingredient="${ingredient}"]`);
-                if (tag) {
-                    tag.style.animation = 'fadeOut 0.3s ease-out';
-                    setTimeout(() => tag.remove(), 300);
-                }
-            }
-
-            updateInputText() {
-                const input = document.getElementById('userInput');
-                if (this.selectedIngredients.size > 0) {
-                    input.value = `I have ${Array.from(this.selectedIngredients).join(', ')}`;
-                } else {
-                    input.value = '';
-                }
-            }
-
-            handleUserMessage() {
-                const input = document.getElementById('userInput');
-                const message = input.value.trim();
-                
-                if (!message) return;
-
-                this.addMessage(message, 'user');
-                input.value = '';
-
-                // Show loading
-                this.showLoading();
-
-                // Simulate AI processing
-                setTimeout(() => {
-                    this.hideLoading();
-                    this.processUserInput(message);
-                }, 1500);
-            }
-
-            addMessage(content, type) {
-                const container = document.getElementById('chatMessages');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${type}`;
-                
-                const avatar = type === 'ai' ? '🤖' : '👤';
-                messageDiv.innerHTML = `
-                    <div class="message-avatar">${avatar}</div>
-                    <div class="message-content">
-                        <p>${content}</p>
-                    </div>
-                `;
-                
-                container.appendChild(messageDiv);
-                container.scrollTop = container.scrollHeight;
-            }
-
-            showLoading() {
-                const container = document.getElementById('chatMessages');
-                const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'message ai loading-message';
-                loadingDiv.innerHTML = `
-                    <div class="message-avatar">🤖</div>
-                    <div class="message-content">
-                        <div class="loading">
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(loadingDiv);
-                container.scrollTop = container.scrollHeight;
-            }
-
-            hideLoading() {
-                const loading = document.querySelector('.loading-message');
-                if (loading) loading.remove();
-            }
-
-            processUserInput(message) {
-                // Extract ingredients from message
-                const extractedIngredients = this.extractIngredients(message);
-                
-                let response = '';
-                if (extractedIngredients.length > 0) {
-                    // Update selected ingredients
-                    extractedIngredients.forEach(ingredient => {
-                        if (!this.selectedIngredients.has(ingredient)) {
-                            this.selectedIngredients.add(ingredient);
-                            this.addIngredientTag(ingredient);
-                            const element = document.querySelector(`[data-ingredient="${ingredient}"]`);
-                            if (element) element.classList.add('selected');
-                        }
-                    });
-                    
-                    response = `Great! I found these ingredients: ${extractedIngredients.join(', ')}. Let me recommend some recipes for you!`;
-                    this.getRecommendations();
-                } else {
-                    response = "I couldn't identify specific ingredients. Try selecting them from the ingredient panel or be more specific about what you have.";
-                }
-                
-                this.addMessage(response, 'ai');
-            }
-
-            extractIngredients(message) {
-                const ingredients = ['Rice', 'Chicken', 'Eggs', 'Tomatoes', 'Onions', 'Garlic', 'Potatoes', 'Carrots', 'Beef', 'Pork', 'Fish', 'Shrimp', 'Mushrooms', 'Bell Peppers', 'Broccoli', 'Spinach'];
-                const found = [];
-                
-                ingredients.forEach(ingredient => {
-                    if (message.toLowerCase().includes(ingredient.toLowerCase())) {
-                        found.push(ingredient);
-                    }
-                });
-                
-                return found;
-            }
-
-            getRecommendations() {
-                const container = document.getElementById('recommendationsList');
-                
-                if (this.selectedIngredients.size === 0) {
-                    container.innerHTML = `
-                        <p style="color: var(--light); opacity: 0.7; text-align: center; padding: 2rem;">
-                            Select ingredients to get personalized recipe recommendations!
-                        </p>
-                    `;
-                    return;
-                }
-
-                const recommendations = this.recipes.filter(recipe => {
-                    const matchCount = recipe.ingredients.filter(ing => 
-                        this.selectedIngredients.has(ing)
-                    ).length;
-                    return matchCount > 0;
-                }).map(recipe => {
-                    const matchCount = recipe.ingredients.filter(ing => 
-                        this.selectedIngredients.has(ing)
-                    ).length;
-                    const matchPercentage = Math.round((matchCount / recipe.ingredients.length) * 100);
-                    return { ...recipe, matchPercentage, matchCount };
-                }).sort((a, b) => b.matchPercentage - a.matchPercentage);
-
-                if (recommendations.length === 0) {
-                    container.innerHTML = `
-                        <p style="color: var(--light); opacity: 0.7; text-align: center; padding: 2rem;">
-                            No matching recipes found. Try adding more ingredients!
-                        </p>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = '';
-                recommendations.forEach((recipe, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'recommendation-card';
-                    card.style.animationDelay = `${index * 0.1}s`;
-                    card.innerHTML = `
-                        <div class="recommendation-header">
-                            <div class="recommendation-title">${recipe.name}</div>
-                            <div class="match-score">${recipe.matchPercentage}% match</div>
-                        </div>
-                        <div class="recommendation-ingredients">
-                            ${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? '...' : ''}
-                        </div>
-                    `;
-                    card.addEventListener('click', () => this.showRecipeDetails(recipe));
-                    container.appendChild(card);
-                });
-            }
-
-            showRecipeDetails(recipe) {
-                const modal = document.getElementById('recipeModal');
-                const title = document.getElementById('modalTitle');
-                const content = document.getElementById('modalContent');
-                
-                title.textContent = recipe.name;
-                
-                content.innerHTML = `
-                    <div class="modal-section">
-                        <h3>📝 Recipe Info</h3>
-                        <p><strong>Difficulty:</strong> ${recipe.difficulty}</p>
-                        <p><strong>Cooking Time:</strong> ${recipe.time}</p>
-                    </div>
-                    
-                    <div class="modal-section">
-                        <h3>🛒 Ingredients</h3>
-                        <div class="ingredients-grid">
-                            ${recipe.ingredients.map(ingredient => `
-                                <div class="ingredient-card ${this.selectedIngredients.has(ingredient) ? 'available' : ''}">
-                                    ${this.selectedIngredients.has(ingredient) ? 
-                                        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#43e97b" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>' : 
-                                        '<span style="color: #f5576c;">○</span>'
-                                    }
-                                    <span>${ingredient}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <div class="modal-section">
-                        <h3>👨‍🍳 Instructions</h3>
-                        <p style="line-height: 1.6;">${recipe.instructions}</p>
-                    </div>
-                `;
-                
-                modal.classList.add('active');
-            }
+    <!-- Data from server (separate from JavaScript) -->
+    {% if current_user %}
+    <script type="application/json" id="server-data">
+        {
+            "recipes": {{ recommendations | tojson if recommendations else '[]' }},
+            "extractedIngredients": {{ extracted_ingredients | tojson if extracted_ingredients else '[]' }},
+            "userLoggedIn": true
         }
+    </script>
+    {% else %}
+    <script type="application/json" id="server-data">
+        {
+            "recipes": [],
+            "extractedIngredients": [],
+            "userLoggedIn": false
+        }
+    </script>
+    {% endif %}
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
-            new AIAssistant();
-        });
-
-        // Add CSS for fade out animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from {
-                    opacity: 1;
-                    transform: scale(1);
-                }
-                to {
-                    opacity: 0;
-                    transform: scale(0.8);
-                }
+    <!-- Clean JavaScript without template mixing -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get server data
+            const serverDataElement = document.getElementById('server-data');
+            const serverData = serverDataElement ? JSON.parse(serverDataElement.textContent) : {};
+            
+            // Only initialize if user is logged in
+            if (!serverData.userLoggedIn) {
+                return;
             }
-        `;
-        document.head.appendChild(style);
+            
+            // Initialize AI Assistant
+            if (typeof window.AIAssistant === 'undefined') {
+                window.AIAssistant = {
+                    selectedIngredients: new Set(),
+                    recipes: serverData.recipes || [],
+                    
+                    init: function() {
+                        this.bindEvents();
+                        this.renderIngredients();
+                        
+                        // Add extracted ingredients if any
+                        const extractedIngredients = serverData.extractedIngredients || [];
+                        if (extractedIngredients.length > 0) {
+                            extractedIngredients.forEach(ingredient => {
+                                this.selectedIngredients.add(ingredient);
+                                this.addIngredientTag(ingredient);
+                                const element = document.querySelector('[data-ingredient="' + ingredient + '"]');
+                                if (element) element.classList.add('selected');
+                            });
+                        }
+                    },
+                    
+                    bindEvents: function() {
+                        // Ingredient search
+                        const searchInput = document.getElementById('ingredientSearch');
+                        if (searchInput) {
+                            searchInput.addEventListener('input', (e) => {
+                                this.filterIngredients(e.target.value);
+                            });
+                        }
+                        
+                        // Send button click
+                        const sendButton = document.getElementById('sendButton');
+                        if (sendButton) {
+                            sendButton.addEventListener('click', () => {
+                                this.handleFormSubmission();
+                            });
+                        }
+                        
+                        // Enter key press in input
+                        const userInput = document.getElementById('userInput');
+                        if (userInput) {
+                            userInput.addEventListener('keypress', (e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    this.handleFormSubmission();
+                                }
+                            });
+                        }
+                        
+                        // Recommendation card clicks
+                        const recommendationCards = document.querySelectorAll('.recommendation-card');
+                        recommendationCards.forEach(card => {
+                            card.addEventListener('click', () => {
+                                const recipeIndex = parseInt(card.dataset.recipeIndex);
+                                if (this.recipes[recipeIndex]) {
+                                    this.showRecipeDetails(this.recipes[recipeIndex]);
+                                }
+                            });
+                        });
+                        
+                        // Modal close
+                        const closeModal = document.getElementById('closeModal');
+                        const modal = document.getElementById('recipeModal');
+                        
+                        if (closeModal && modal) {
+                            closeModal.addEventListener('click', () => {
+                                modal.style.display = 'none';
+                            });
+                            
+                            modal.addEventListener('click', (e) => {
+                                if (e.target === modal) {
+                                    modal.style.display = 'none';
+                                }
+                            });
+                        }
+                    },
+                    
+                    filterIngredients: function(query) {
+                        const ingredients = document.querySelectorAll('.ingredient-item');
+                        ingredients.forEach(item => {
+                            const text = item.textContent.toLowerCase();
+                            if (text.includes(query.toLowerCase())) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
+                    },
+                    
+                    renderIngredients: function() {
+                        const container = document.getElementById('ingredientsList');
+                        if (!container) return;
+
+                        container.querySelectorAll('.ingredient-item').forEach(item => {
+                            const ingredient = item.dataset.ingredient;
+                            item.addEventListener('click', () => this.toggleIngredient(ingredient, item));
+                        });
+                    },
+                    
+                    toggleIngredient: function(ingredient, element) {
+                        if (this.selectedIngredients.has(ingredient)) {
+                            this.selectedIngredients.delete(ingredient);
+                            element.classList.remove('selected');
+                            this.removeIngredientTag(ingredient);
+                        } else {
+                            this.selectedIngredients.add(ingredient);
+                            element.classList.add('selected');
+                            this.addIngredientTag(ingredient);
+                        }
+                        this.updateInputText();
+                    },
+                    
+                    addIngredientTag: function(ingredient) {
+                        const container = document.getElementById('selectedIngredients');
+                        if (!container) return;
+
+                        const tag = document.createElement('div');
+                        tag.className = 'ingredient-tag';
+                        tag.dataset.ingredient = ingredient;
+                        tag.innerHTML = '<span>' + ingredient + '</span><button class="remove-ingredient" type="button">×</button>';
+                        
+                        tag.querySelector('.remove-ingredient').addEventListener('click', (e) => {
+                            e.preventDefault();
+                            this.toggleIngredient(ingredient, document.querySelector('[data-ingredient="' + ingredient + '"]'));
+                        });
+                        
+                        container.appendChild(tag);
+                    },
+                    
+                    removeIngredientTag: function(ingredient) {
+                        const tag = document.querySelector('#selectedIngredients [data-ingredient="' + ingredient + '"]');
+                        if (tag) {
+                            tag.remove();
+                        }
+                    },
+                    
+                    updateInputText: function() {
+                        const input = document.getElementById('userInput');
+                        if (!input) return;
+
+                        if (this.selectedIngredients.size > 0) {
+                            input.value = 'Saya punya ' + Array.from(this.selectedIngredients).join(', ');
+                        }
+                    },
+                    
+                    handleFormSubmission: function() {
+                        const input = document.getElementById('userInput');
+                        const sendButton = document.getElementById('sendButton');
+                        const inputForm = document.getElementById('inputForm');
+                        const message = input.value.trim();
+                        
+                        if (!message) return;
+                        
+                        // Set loading state
+                        inputForm.classList.add('loading');
+                        sendButton.disabled = true;
+                        
+                        // Add user message to chat
+                        this.addMessageToChat(message, 'user');
+                        
+                        // Clear input
+                        input.value = '';
+                        
+                        // Clear selected ingredients tags (but keep the selection for next time)
+                        const selectedContainer = document.getElementById('selectedIngredients');
+                        if (selectedContainer) {
+                            selectedContainer.innerHTML = '';
+                        }
+                        
+                        // Show loading
+                        this.showLoadingMessage();
+                        
+                        // Send AJAX request
+                        this.sendMessageToServer(message);
+                    },
+                    
+                    addMessageToChat: function(content, type) {
+                        const chatMessages = document.getElementById('chatMessages');
+                        if (!chatMessages) return;
+                        
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message ' + type;
+                        
+                        const avatar = type === 'ai' ? '🤖' : '👤';
+                        messageDiv.innerHTML = `
+                            <div class="message-avatar">${avatar}</div>
+                            <div class="message-content">
+                                <p>${content}</p>
+                            </div>
+                        `;
+                        
+                        chatMessages.appendChild(messageDiv);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        
+                        // Animate message appearance
+                        messageDiv.style.opacity = '0';
+                        messageDiv.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            messageDiv.style.opacity = '1';
+                            messageDiv.style.transform = 'translateY(0)';
+                            messageDiv.style.transition = 'all 0.3s ease-out';
+                        }, 100);
+                    },
+                    
+                    showLoadingMessage: function() {
+                        const chatMessages = document.getElementById('chatMessages');
+                        if (!chatMessages) return;
+                        
+                        const loadingDiv = document.createElement('div');
+                        loadingDiv.className = 'message ai loading-message';
+                        loadingDiv.innerHTML = `
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="typing-indicator">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        chatMessages.appendChild(loadingDiv);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    },
+                    
+                    hideLoadingMessage: function() {
+                        const loadingMessage = document.querySelector('.loading-message');
+                        if (loadingMessage) {
+                            loadingMessage.remove();
+                        }
+                        
+                        // Remove loading state from form
+                        const inputForm = document.getElementById('inputForm');
+                        const sendButton = document.getElementById('sendButton');
+                        
+                        if (inputForm) inputForm.classList.remove('loading');
+                        if (sendButton) sendButton.disabled = false;
+                    },
+                    
+                    sendMessageToServer: function(message) {
+                        const formData = new FormData();
+                        formData.append('query', message);
+                        
+                        fetch('/ai', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.text();
+                        })
+                        .then(html => {
+                            // Hide loading
+                            this.hideLoadingMessage();
+                            
+                            // Parse the response to extract AI message and recommendations
+                            this.parseServerResponse(html);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            this.hideLoadingMessage();
+                            this.addMessageToChat('Maaf, terjadi kesalahan. Silakan coba lagi.', 'ai');
+                        });
+                    },
+                    
+                    parseServerResponse: function(html) {
+                        // Create a temporary div to parse the HTML response
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = html;
+                        
+                        // Extract recommendations data
+                        const serverDataScript = tempDiv.querySelector('#server-data');
+                        if (serverDataScript) {
+                            try {
+                                const newServerData = JSON.parse(serverDataScript.textContent);
+                                
+                                // Update recipes
+                                if (newServerData.recipes && newServerData.recipes.length > 0) {
+                                    this.recipes = newServerData.recipes;
+                                    this.updateRecommendations(newServerData.recipes);
+                                }
+                                
+                                // Add AI response message
+                                if (newServerData.extractedIngredients && newServerData.extractedIngredients.length > 0) {
+                                    const ingredients = newServerData.extractedIngredients.join(', ');
+                                    this.addMessageToChat(`Saya menemukan bahan-bahan: ${ingredients}. Berikut adalah rekomendasi resep untuk Anda!`, 'ai');
+                                    
+                                    // Update selected ingredients
+                                    newServerData.extractedIngredients.forEach(ingredient => {
+                                        if (!this.selectedIngredients.has(ingredient)) {
+                                            this.selectedIngredients.add(ingredient);
+                                            this.addIngredientTag(ingredient);
+                                            const element = document.querySelector('[data-ingredient="' + ingredient + '"]');
+                                            if (element) element.classList.add('selected');
+                                        }
+                                    });
+                                } else {
+                                    this.addMessageToChat('Saya tidak dapat mengidentifikasi bahan spesifik. Coba sebutkan bahan yang lebih jelas atau pilih dari panel samping.', 'ai');
+                                }
+                            } catch (e) {
+                                console.error('Error parsing server response:', e);
+                                this.addMessageToChat('Respon diterima, silakan cek rekomendasi di panel samping.', 'ai');
+                            }
+                        } else {
+                            this.addMessageToChat('Terima kasih atas input Anda. Silakan lihat rekomendasi di panel samping.', 'ai');
+                        }
+                    },
+                    
+                    updateRecommendations: function(recipes) {
+                        const recommendationsList = document.getElementById('recommendationsList');
+                        if (!recommendationsList) return;
+                        
+                        if (recipes.length === 0) {
+                            recommendationsList.innerHTML = '<p class="no-recommendations">Tidak ada resep yang cocok. Coba tambahkan bahan lain!</p>';
+                            return;
+                        }
+                        
+                        let html = '';
+                        recipes.forEach((recipe, index) => {
+                            html += `
+                                <div class="recommendation-card" data-recipe-index="${index}">
+                                    <div class="recommendation-header">
+                                        <div class="recommendation-title">${recipe.name}</div>
+                                        <div class="match-score">${Math.round(recipe.similarity_score * 100)}% match</div>
+                                    </div>
+                                    <div class="recommendation-ingredients">
+                                        ${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? '...' : ''}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        recommendationsList.innerHTML = html;
+                        
+                        // Re-bind click events for new cards
+                        const newCards = recommendationsList.querySelectorAll('.recommendation-card');
+                        newCards.forEach(card => {
+                            card.addEventListener('click', () => {
+                                const recipeIndex = parseInt(card.dataset.recipeIndex);
+                                if (this.recipes[recipeIndex]) {
+                                    this.showRecipeDetails(this.recipes[recipeIndex]);
+                                }
+                            });
+                        });
+                    },
+                    
+                    showRecipeDetails: function(recipe) {
+                        const modal = document.getElementById('recipeModal');
+                        const title = document.getElementById('modalTitle');
+                        const content = document.getElementById('modalContent');
+                        
+                        if (!modal || !title || !content) return;
+                        
+                        title.textContent = recipe.name;
+                        content.innerHTML = '<div class="modal-section"><h3>📝 Informasi Resep</h3><p><strong>Tingkat Kesesuaian:</strong> ' + Math.round(recipe.similarity_score * 100) + '%</p></div><div class="modal-section"><h3>🛒 Bahan-bahan</h3><div class="ingredients-grid">' + recipe.ingredients.map(ingredient => '<div class="ingredient-card"><span>' + ingredient + '</span></div>').join('') + '</div></div><div class="modal-section"><h3>👨‍🍳 Cara Memasak</h3><p style="line-height: 1.6;">' + recipe.instructions + '</p></div>';
+                        
+                        modal.style.display = 'flex';
+                    }
+                };
+                
+                // Initialize the assistant
+                window.AIAssistant.init();
+            }
+        });
     </script>
 </body>
 </html>
