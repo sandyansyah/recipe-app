@@ -2,16 +2,53 @@
 
 Panduan lengkap deployment aplikasi Flask Recipe AI dari setup server hingga production.
 
+## 🌟 Repository Information
+
+**GitHub Repository:** https://github.com/sandyansyah/recipe-app/
+
+### 📥 Quick Clone & Setup
+
+```bash
+# Clone repository
+git clone https://github.com/sandyansyah/recipe-app.git
+cd recipe-app
+
+# Setup virtual environment
+python3 -m venv venv
+source venv/bin/activate  # Linux/Mac
+# atau
+venv\Scripts\activate     # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Setup NLTK data
+python3 -c "
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords') 
+nltk.download('wordnet')
+"
+
+# Run application
+python3 app.py
+```
+
+**Local Access:** http://localhost:5000
+
+---
+
 ## 📋 Table of Contents
 
-- [Server Setup](#server-setup)
-- [Install Dependencies](#install-dependencies)
-- [Web Server Setup](#web-server-setup)
-- [Flask Application Deploy](#flask-application-deploy)
-- [Domain & SSL Setup](#domain--ssl-setup)
-- [Troubleshooting](#troubleshooting)
-- [GitHub Integration](#github-integration)
-- [Development Workflow](#development-workflow)
+- [Repository Information](#-repository-information)
+- [Server Setup](#-server-setup)
+- [Install Dependencies](#-install-dependencies)
+- [Web Server Setup](#-web-server-setup)
+- [Flask Application Deploy](#-flask-application-deploy)
+- [Domain & SSL Setup](#-domain--ssl-setup)
+- [Troubleshooting](#-troubleshooting)
+- [GitHub Integration](#-github-integration)
+- [Development Workflow](#-development-workflow)
 
 ---
 
@@ -20,7 +57,7 @@ Panduan lengkap deployment aplikasi Flask Recipe AI dari setup server hingga pro
 ### 1. Initial Server Access
 ```bash
 # SSH ke server
-ssh root@ip public
+ssh root@47.84.58.176
 ```
 
 ### 2. System Update
@@ -80,36 +117,20 @@ curl localhost
 
 ## 🚀 Flask Application Deploy
 
-### 1. Create Application Directory
+### 1. Clone Repository to Server
 ```bash
-# Create directory structure
-sudo mkdir -p /var/www/recipe-app
-sudo chown $USER:$USER /var/www/recipe-app
+# Create directory and clone
+sudo mkdir -p /var/www/
+cd /var/www/
+
+# Clone from GitHub
+git clone https://github.com/sandyansyah/recipe-app.git
+sudo mv recipe-app recipe-app
+sudo chown -R $USER:$USER /var/www/recipe-app
 cd /var/www/recipe-app
-
-# Create folder structure
-mkdir -p templates static logic
 ```
 
-### 2. Upload Application Files
-```
-/var/www/recipe-app/
-├── app.py                 # Main Flask application
-├── logic/
-│   ├── __init__.py
-│   ├── ai.py             # AI recommendation engine
-│   ├── home.py           # Home page logic
-│   ├── resep.py          # Recipe data handler
-│   └── model.json        # Recipe database
-├── templates/
-│   ├── ai.html           # AI assistant page
-│   ├── home.html         # Home page
-│   └── resep.html        # Recipe listing page
-└── static/
-    └── style.css         # Application styles
-```
-
-### 3. Setup Python Virtual Environment
+### 2. Setup Python Virtual Environment
 ```bash
 cd /var/www/recipe-app
 
@@ -119,11 +140,11 @@ python3 -m venv venv
 # Activate virtual environment
 source venv/bin/activate
 
-# Install Python dependencies
-pip install flask pandas scikit-learn nltk numpy joblib
+# Install Python dependencies from requirements.txt
+pip install -r requirements.txt
 ```
 
-### 4. Setup NLTK Data
+### 3. Setup NLTK Data
 ```bash
 # Download required NLTK data
 python3 -c "
@@ -135,19 +156,16 @@ nltk.download('punkt_tab')
 "
 ```
 
-### 5. Train AI Model
+### 4. Train AI Model
 ```bash
-# Fix path issues in ai.py and resep.py
-# Change from: os.path.join('logic', 'model.json')
-# To: os.path.join(os.path.dirname(__file__), 'model.json')
-
 # Train the AI model
 cd logic
 python3 ai.py
 # Should output: "NLM model trained and saved successfully."
+cd ..
 ```
 
-### 6. Configure Nginx Reverse Proxy
+### 5. Configure Nginx Reverse Proxy
 ```bash
 # Edit Nginx configuration
 sudo nano /etc/nginx/sites-available/default
@@ -180,7 +198,7 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-### 7. Run Flask Application
+### 6. Run Flask Application
 ```bash
 cd /var/www/recipe-app
 source venv/bin/activate
@@ -198,21 +216,21 @@ ps aux | grep python3
 
 ### 1. DNS Configuration (Domainesia)
 1. Login ke panel Domainesia
-2. Pilih domain `domain.com`
+2. Pilih domain `sandykaa.com`
 3. DNS Management
 4. Tambah A record:
    - **Type:** A
-   - **Name:** rpl
-   - **Value:** ip public
+   - **Name:** aii
+   - **Value:** 47.84.58.176
    - **TTL:** 300
 
 ### 2. Test Domain (wait 5-15 minutes)
 ```bash
 # Test domain resolution
-ping rpl.domain.com
+ping aii.sandykaa.com
 
 # Test website
-curl -H "Host: rpl.domain.com" localhost
+curl -H "Host: aii.sandykaa.com" localhost
 ```
 
 ### 3. SSL Certificate (Optional)
@@ -221,7 +239,7 @@ curl -H "Host: rpl.domain.com" localhost
 sudo apt install certbot python3-certbot-nginx -y
 
 # Setup SSL
-sudo certbot --nginx -d rpl.domain.com
+sudo certbot --nginx -d aii.sandykaa.com
 ```
 
 ---
@@ -284,16 +302,14 @@ sudo systemctl start flask-app
 
 **Solution:**
 ```python
-# In ai.py and resep.py, change:
-DATA_PATH = os.path.join('logic', 'model.json')
-# To:
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'model.json')
+# In ai.py and other files, make sure paths are correct
+# Check that all files are properly uploaded
 ```
 
 #### 4. Missing Packages
 ```bash
 # Install missing packages
-pip install flask pandas scikit-learn nltk numpy joblib
+pip install -r requirements.txt
 
 # For zip utility
 apt install zip unzip -y
@@ -303,34 +319,26 @@ apt install zip unzip -y
 
 ## 📚 GitHub Integration
 
-### 1. Create GitHub Repository
-1. **GitHub.com** → Create new repository
-2. **Name:** `recipe-app`
-3. **Public** repository
-4. **Don't** check "Add README file"
+### 1. Repository Already Created
+Repository sudah tersedia di: https://github.com/sandyansyah/recipe-app/
 
-### 2. Setup Git Configuration
+### 2. Setup Git Configuration (Jika diperlukan)
 ```bash
 # Configure Git
 git config --global user.name "sandyansyah"
 git config --global user.email "sandyansyah356@gmail.com"
 ```
 
-### 3. Initialize Git Repository
+### 3. Update Repository (Jika ada perubahan)
 ```bash
 cd /var/www/recipe-app
 
-# Initialize git
-git init
+# Add changes
 git add .
-git commit -m "Initial commit - Flask Recipe AI App"
-git branch -M main
-
-# Add remote repository
-git remote add origin https://github.com/sandyansyah/recipe-app.git
+git commit -m "Update deployment configuration"
 
 # Push to GitHub
-git push -u origin main
+git push origin main
 ```
 
 ### 4. Authentication Setup
@@ -348,19 +356,18 @@ git push -u origin main
 
 ## 🔄 Development Workflow
 
-### 1. Update Code from Local to Server
+### 1. Update Code from GitHub to Server
 ```bash
-# On local computer
-git add .
-git commit -m "Update description"
-git push origin main
-
 # On server
 cd /var/www/recipe-app
+
+# Stop current Flask app
+pkill -f "python3 app.py"
+
+# Pull latest changes
 git pull origin main
 
 # Restart Flask
-pkill -f "python3 app.py"
 source venv/bin/activate
 nohup python3 app.py > flask.log 2>&1 &
 ```
@@ -370,7 +377,7 @@ nohup python3 app.py > flask.log 2>&1 &
 # Edit files on server
 nano app.py
 
-# Commit and push
+# Commit and push changes
 git add .
 git commit -m "Fix bug description"
 git push origin main
@@ -391,11 +398,13 @@ nano /var/www/update-app.sh
 #!/bin/bash
 cd /var/www/recipe-app
 
+# Stop Flask
+pkill -f "python3 app.py"
+
 # Pull latest code
 git pull origin main
 
 # Restart Flask
-pkill -f "python3 app.py"
 source venv/bin/activate
 nohup python3 app.py > flask.log 2>&1 &
 
@@ -414,23 +423,29 @@ chmod +x /var/www/update-app.sh
 
 ## 📊 Application Features
 
-### 1. Recipe AI Assistant
+### 1. Multi-Chain Web3 Authentication
+- **Ethereum** support (MetaMask, OKX, Coinbase, WalletConnect)
+- **Solana** support (Phantom, Solflare, Backpack)
+- **Cross-chain** user management
+- **Wallet statistics** and analytics
+
+### 2. Recipe AI Assistant
 - **Natural Language Processing** untuk parsing ingredients
 - **TF-IDF Vectorization** untuk recipe matching
 - **Cosine Similarity** untuk recommendations
 - **Interactive UI** dengan real-time suggestions
 
-### 2. Recipe Database
+### 3. Encrypted Chat System
+- **CryptSan encryption** dengan AES-256-CBC
+- **Shared group key** untuk diskusi komunitas
+- **Hash verification** untuk message integrity
+- **Multi-user** encrypted messaging
+
+### 4. Recipe Database
 - **JSON-based** recipe storage
 - **Indonesian recipes** (Nasi Goreng, Mie Goreng, dll)
 - **Ingredient matching** algorithm
 - **Scalable architecture** untuk tambah recipes
-
-### 3. Web Interface
-- **Responsive design** dengan modern CSS
-- **Multi-page structure** (Home, Recipes, AI)
-- **Interactive ingredients selector**
-- **Real-time recipe recommendations**
 
 ---
 
@@ -446,32 +461,25 @@ systemctl status nginx     # Nginx status
 systemctl status flask-app # Flask service status
 ```
 
-# Kill proses Flask yang sedang berjalan
-pkill -f "python3 app.py"
-
-# Masuk ke direktori aplikasi
-cd /var/www/recipe-app
-
-# Aktifkan virtual environment
-source venv/bin/activate
-
-# Jalankan ulang Flask
-nohup python3 app.py > flask.log 2>&1 &
-
-
 ### Flask App Management
 ```bash
+# Kill running Flask process
+pkill -f "python3 app.py"
+
+# Go to app directory
+cd /var/www/recipe-app
+
+# Activate virtual environment
+source venv/bin/activate
+
+# Restart Flask
+nohup python3 app.py > flask.log 2>&1 &
+
 # Check Flask process
 ps aux | grep python3
 
 # View Flask logs
 tail -f flask.log
-
-# Restart Flask manually
-pkill -f "python3 app.py"
-cd /var/www/recipe-app
-source venv/bin/activate
-nohup python3 app.py > flask.log 2>&1 &
 ```
 
 ### Git Management
@@ -489,317 +497,111 @@ git remote -v
 git reset --hard origin/main
 git pull origin main
 ```
-# GitHub to Server Deployment Guide
 
-## 🚀 Quick Start Deployment
+---
 
-### Prerequisites
-- Server dengan akses SSH/root
-- Git terinstall di server
-- Python 3.x dan virtual environment
-- Repository GitHub sudah di-clone ke server
+## 🚦 Quick Deployment Checklist
 
-## 📋 Standard Deployment Workflow
+### Pre-Deployment
+- [ ] Repository sudah di-clone: `git clone https://github.com/sandyansyah/recipe-app.git`
+- [ ] Dependencies sudah di-install: `pip install -r requirements.txt`
+- [ ] NLTK data sudah di-download
+- [ ] AI model sudah di-train
 
-### 1. Persiapan Awal (Sekali Setup)
+### Deployment Process
+- [ ] Nginx sudah dikonfigurasi
+- [ ] Flask app berjalan di port 5000
+- [ ] Domain sudah di-setup (aii.sandykaa.com)
+- [ ] SSL certificate (optional)
+
+### Post-Deployment
+- [ ] Test semua fitur (Home, AI, Diskusi)
+- [ ] Test Web3 authentication
+- [ ] Test encrypted chat
+- [ ] Monitor logs untuk error
+
+---
+
+## 🚨 Emergency Commands
+
+### Jika Aplikasi Tidak Jalan
 ```bash
-# Clone repository
-git clone https://github.com/username/repository-name.git
-cd repository-name
+# Stop semua proses Python
+sudo pkill -f python3
 
-# Setup virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Deployment Rutin
-
-#### Method A: Safe Pull (Recommended)
-```bash
-# Masuk ke direktori project
+# Masuk ke direktori aplikasi
 cd /var/www/recipe-app
-
-# Stop aplikasi yang berjalan
-pkill -f "python3 app.py"
-
-# Backup perubahan lokal (jika ada)
-git stash push -m "backup before pull $(date)"
-
-# Pull update terbaru
-git pull origin main
-
-# Aktifkan virtual environment
-source venv/bin/activate
-
-# Install/update dependencies jika ada perubahan
-pip install -r requirements.txt
-
-# Test aplikasi
-python3 app.py
-
-# Jika test OK, jalankan di background
-nohup python3 app.py > flask.log 2>&1 &
-```
-
-#### Method B: Force Pull (Jika Ada Konflik)
-```bash
-# Stop aplikasi
-pkill -f "python3 app.py"
-
-# Force reset ke versi remote (HATI-HATI: hapus local changes)
-git fetch origin
-git reset --hard origin/main
-git clean -fd
-
-# Aktifkan venv dan install dependencies
-source venv/bin/activate
-pip install -r requirements.txt
-
-# Restart aplikasi
-nohup python3 app.py > flask.log 2>&1 &
-```
-
-## 🔧 Troubleshooting Common Issues
-
-### Issue 1: Merge Conflicts
-**Error:** `<<<<<<< HEAD`, `=======`, `>>>>>>> commit_hash`
-
-**Solution:**
-```bash
-# Method 1: Abort dan reset
-git merge --abort
-git reset --hard origin/main
-
-# Method 2: Manual resolve (untuk advanced users)
-nano [conflicted_file]  # Edit dan hapus conflict markers
-git add .
-git commit -m "Resolve merge conflicts"
-```
-
-### Issue 2: Module Not Found
-**Error:** `ModuleNotFoundError: No module named 'xxx'`
-
-**Solution:**
-```bash
-# Install missing module
-pip install [module_name]
-
-# Atau install semua dari requirements
-pip install -r requirements.txt
-
-# Update requirements.txt
-pip freeze > requirements.txt
-```
-
-### Issue 3: Permission Denied
-**Error:** `Permission denied`
-
-**Solution:**
-```bash
-# Ganti ownership ke user yang benar
-sudo chown -R $USER:$USER /var/www/recipe-app
-
-# Atau jalankan dengan sudo (not recommended)
-sudo git pull origin main
-```
-
-### Issue 4: Flask Not Starting
-**Error:** `Exit 1` atau aplikasi crash
-
-**Solution:**
-```bash
-# Check error log
-cat flask.log
 
 # Test manual untuk lihat error
 python3 app.py
 
-# Check syntax file utama
-python3 -m py_compile app.py
+# Jika OK, jalankan di background
+source venv/bin/activate
+nohup python3 app.py > flask.log 2>&1 &
 ```
 
-## 📁 Project Structure Recommendations
-
-```
-/var/www/recipe-app/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── flask.log             # Application logs
-├── README.md             # This documentation
-├── .gitignore            # Git ignore rules
-├── logic/                # Application logic
-│   ├── __init__.py
-│   ├── home.py
-│   ├── ai.py
-│   └── diskusi.py
-├── templates/            # HTML templates
-├── static/               # CSS, JS, images
-└── venv/                # Virtual environment (di .gitignore)
-```
-
-## 🔄 Git Configuration untuk Smooth Deployment
-
-### Setup Git Config (Sekali saja)
+### Jika Repository Bermasalah
 ```bash
-# Set merge strategy
-git config pull.rebase false
-git config merge.ours.driver true
-
-# Set user info
-git config user.name "Server Deployment"
-git config user.email "deploy@server.com"
-
-# Auto cleanup
-git config fetch.prune true
-```
-
-### .gitignore Recommendations
-```gitignore
-# Virtual Environment
-venv/
-env/
-
-# Python Cache
-__pycache__/
-*.pyc
-*.pyo
-
-# Logs
-*.log
-flask.log
-
-# Environment Variables
-.env
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-```
-
-## 🚦 Deployment Checklist
-
-### Pre-Deployment
-- [ ] Code sudah di-commit dan push ke GitHub
-- [ ] Dependencies sudah di-update di requirements.txt
-- [ ] Environment variables sudah di-set
-- [ ] Database migration (jika ada) sudah dijalankan
-
-### Deployment Process
-- [ ] Stop aplikasi yang berjalan
-- [ ] Backup perubahan lokal (jika ada)
-- [ ] Pull code terbaru dari GitHub
-- [ ] Install/update dependencies
-- [ ] Test aplikasi secara manual
-- [ ] Restart aplikasi di background
-- [ ] Verify aplikasi berjalan dengan benar
-
-### Post-Deployment
-- [ ] Check logs untuk error
-- [ ] Test endpoint utama
-- [ ] Monitor performance
-- [ ] Backup database (jika ada)
-
-## 🔧 Useful Commands
-
-### Monitoring
-```bash
-# Check running processes
-ps aux | grep python3
-
-# Check port usage
-netstat -tlnp | grep :5000
-
-# Monitor logs real-time
-tail -f flask.log
-
-# Check disk space
-df -h
-```
-
-### Maintenance
-```bash
-# Clear logs
-> flask.log
-
-# Update system packages (Ubuntu)
-sudo apt update && sudo apt upgrade
-
-# Clean pip cache
-pip cache purge
-
-# Remove unused packages
-pip autoremove
-```
-
-## 🚨 Emergency Recovery
-
-### Jika Aplikasi Rusak Total
-```bash
-# 1. Backup current state
+# Backup current state
 cp -r /var/www/recipe-app /var/www/recipe-app-backup-$(date +%Y%m%d)
 
-# 2. Fresh clone
+# Fresh clone
 rm -rf /var/www/recipe-app
-git clone https://github.com/username/repository-name.git /var/www/recipe-app
+git clone https://github.com/sandyansyah/recipe-app.git /var/www/recipe-app
 cd /var/www/recipe-app
 
-# 3. Setup environment
+# Setup environment
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# 4. Restore data (jika ada)
-cp /var/www/recipe-app-backup-*/user.json ./
-
-# 5. Start application
+# Start application
 nohup python3 app.py > flask.log 2>&1 &
 ```
 
-## 📞 Support Information
-
-- **Repository:** https://github.com/username/repository-name
-- **Server Path:** `/var/www/recipe-app`
-- **Log File:** `/var/www/recipe-app/flask.log`
-- **Port:** 5000 (default Flask)
-
-## 📝 Notes
-
-- Selalu backup sebelum deployment ke production
-- Test di environment staging dulu sebelum production
-- Monitor logs setelah deployment
-- Gunakan branching strategy untuk development
-- Setup CI/CD untuk automation (GitHub Actions, etc.)
-
----
-
-**Last Updated:** $(date)  
-**Version:** 1.0  
-**Maintainer:** Development Team
 ---
 
 ## 🌐 Access URLs
 
 - **Website:** http://47.84.58.176
-- **Subdomain:** http://aii.sandykaa.com (after DNS propagation)
-- **GitHub Repository:** https://github.com/sandyansyah/recipe-app
+- **Custom Domain:** http://aii.sandykaa.com (after DNS propagation)
+- **GitHub Repository:** https://github.com/sandyansyah/recipe-app/
 - **Server SSH:** `ssh root@47.84.58.176`
+
+---
+
+## 📋 Dependencies (requirements.txt)
+
+```txt
+# Web Framework
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Data Science & Machine Learning
+numpy==1.24.3
+pandas==2.0.3
+scikit-learn==1.3.0
+joblib==1.3.2
+
+# Natural Language Processing
+nltk==3.8.1
+
+# Cryptography
+cryptography==41.0.4
+
+# Additional utilities
+python-dotenv==1.0.0
+```
 
 ---
 
 ## 📝 Notes
 
-1. **Security:** Consider using environment variables for sensitive data
+1. **Security:** Environment variables untuk sensitive data sudah diimplementasi
 2. **Backup:** Regular GitHub commits serve as backup
-3. **Monitoring:** Monitor server resources to prevent memory issues
-4. **SSL:** Implement HTTPS for production use
-5. **Domain:** DNS propagation takes 5-15 minutes
+3. **Monitoring:** Monitor server resources untuk mencegah memory issues
+4. **SSL:** HTTPS sudah bisa diimplementasi dengan Let's Encrypt
+5. **Domain:** DNS propagation membutuhkan 5-15 menit
 
 ---
 
@@ -809,8 +611,12 @@ Aplikasi Flask Recipe AI berhasil di-deploy dengan:
 - ✅ Server Ubuntu 22.04 LTS di Alibaba Cloud ECS
 - ✅ Nginx reverse proxy configuration
 - ✅ Flask application dengan AI recommendations
-- ✅ Custom subdomain setup
+- ✅ Multi-chain Web3 authentication (Ethereum & Solana)
+- ✅ Encrypted chat system dengan CryptSan
+- ✅ Custom subdomain setup (aii.sandykaa.com)
 - ✅ GitHub integration untuk version control
 - ✅ Automated deployment workflow
+
+**Repository:** https://github.com/sandyansyah/recipe-app/
 
 **Happy Coding!** 🚀
